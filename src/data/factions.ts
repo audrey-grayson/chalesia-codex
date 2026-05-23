@@ -48,6 +48,7 @@ Her political weakness is her perceived distance from common soldiers and provin
     type: 'civil-war-faction',
     allegiance: 'iaryx',
     color: '#7ab5a0',
+    crestImage: '/chalesia-codex/arms/imperial-battle-crest.png',
     tagline: 'The Iron General — commoner-born military commander rallying the west.',
     sections: [
       {
@@ -71,7 +72,7 @@ Her political weakness is her perceived distance from common soldiers and provin
     type: 'civil-war-faction',
     allegiance: 'halkir',
     color: '#c9a84c',
-    crestImage: '/chalesia-codex/arms/halkir.png',
+    crestImage: '/chalesia-codex/arms/pelath.png',
     tagline: "The Merchant Lord — trader-king of Pelath, claiming descent from the First Empire's founder.",
     sections: [
       {

@@ -23,6 +23,8 @@ export function FactionPage({ flags }: Props) {
       tagline={faction.tagline}
       badge={{ label: TYPE_LABELS[faction.type] ?? faction.type, color: faction.color }}
       headerCrest={faction.crestImage}
+      backTo="/factions"
+      backLabel="Back to Factions"
       sections={faction.sections}
       relatedLinks={faction.relatedLinks}
       flags={flags}

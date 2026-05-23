@@ -25,8 +25,8 @@ export function CityPage({ flags }: Props) {
       title={city.name + (city.isCapital ? ' ★' : '')}
       tagline={city.tagline}
       badge={{ label: FACTION_LABELS[city.faction] ?? city.faction, color: FACTION_COLORS[city.faction] ?? '#888' }}
-      backTo={fromMap ? '/map' : undefined}
-      backLabel="← Back to Map"
+      backTo={fromMap ? '/map' : '/cities'}
+      backLabel={fromMap ? 'Back to Map' : 'Back to Cities'}
       sections={city.sections}
       relatedLinks={city.relatedLinks}
       flags={flags}

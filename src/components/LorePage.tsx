@@ -11,7 +11,7 @@ interface Props {
   badge?: { label: string; color: string };
   headerCrest?: string;
   backTo?: string;
-  backLabel?: string;
+  backLabel?: string; // should NOT include ← — the button renders it
   sections: LoreSection[];
   relatedLinks?: Array<{ label: string; to: string }>;
   flags: Set<ContentFlag>;
@@ -19,7 +19,7 @@ interface Props {
 }
 
 export function LorePage({
-  title, tagline, badge, headerCrest, backTo, backLabel = '← Back to Map',
+  title, tagline, badge, headerCrest, backTo, backLabel = 'Back',
   sections, relatedLinks, flags, children,
 }: Props) {
   const navigate = useNavigate();

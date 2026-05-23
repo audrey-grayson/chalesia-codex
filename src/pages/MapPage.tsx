@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { CITIES } from '../data/cities';
 import type { CityData } from '../types';
 import { loadMapData, type ParsedMapData } from '../utils/mapParser';
+
+/* ── Faction colour palette ─────────────────────────────────────────────── */
 
 const FACTION_COLORS: Record<string, string> = {
   chalexis: '#9090b0',
@@ -18,20 +20,31 @@ const FACTION_LABELS: Record<string, string> = {
   chalexis: 'Chalexis',
   iaryx:    'Iaryx',
   halkir:   'Halkir',
-  neutral:  'Neutral',
+  neutral:  'Wildlands',
   free:     'Free Cities',
-  foreign:  'Foreign',
+  foreign:  'Foreign Powers',
 };
 
-function mapStateNameToFaction(name: string): string {
-  const n = name.toLowerCase();
-  if (n.includes('hanacene') || n.includes('chalexis') || n.includes('empire')) return 'chalexis';
-  if (n.includes('iaryx'))                                                        return 'iaryx';
-  if (n.includes('halkir') || n.includes('pelath') || n.includes('imikiv'))      return 'halkir';
-  if (n.includes('free') || n.includes('bellatara') || n.includes('atros'))      return 'free';
-  if (n.includes('skeinland') || n.includes('legia') || n.includes('lania') || n.includes('inmoth')) return 'foreign';
+/* The map's "states" are large polities (Hanacene Empire, Skeinland, Legia…).
+ * The Hanacene civil-war factions are subdivisions inside the Empire — they
+ * aren't separate states on the map. We tint the whole Empire one colour and
+ * use city markers (already tagged by faction in cities.ts) to convey faction
+ * detail at the city level. */
+function stateToFaction(stateName: string): string {
+  const n = stateName.toLowerCase();
+  if (n.includes('hanacene') || n.includes('empire')) return 'chalexis';   // imperial
+  if (n.includes('skeinland') || n.includes('legia') || n.includes('lania') ||
+      n.includes('inmoth')    || n.includes('atho')   || n.includes('intilea') ||
+      n.includes('acenia')    || n.includes('avonia') || n.includes('sandfair') ||
+      n.includes('abergoria') || n.includes('galta')  || n.includes('gravadalia')) {
+    return 'foreign';
+  }
+  if (n.includes('atros')) return 'free';
+  if (n === 'neutrals') return 'neutral';
   return 'neutral';
 }
+
+/* ── Component ──────────────────────────────────────────────────────────── */
 
 export function MapPage() {
   const [mapData,    setMapData]    = useState<ParsedMapData | null>(null);
@@ -47,28 +60,30 @@ export function MapPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const handleMouseMove = useCallback((city: CityData, e: React.MouseEvent) => {
+  const handleHover = useCallback((city: CityData, e: React.MouseEvent) => {
     setTooltip(city);
     setTooltipPos({ x: e.clientX, y: e.clientY });
   }, []);
 
-  const popRadius = (pop: number) => {
-    if (pop >= 80000) return 7;
-    if (pop >= 40000) return 5.5;
-    if (pop >= 20000) return 4;
-    return 3;
-  };
+  /* Map state-id → faction colour, computed once per map load. */
+  const stateFactionColor = useMemo(() => {
+    const m: Record<number, string> = {};
+    if (mapData) {
+      for (const s of mapData.states) {
+        m[s.i] = FACTION_COLORS[stateToFaction(s.name)] ?? FACTION_COLORS.neutral;
+      }
+    }
+    return m;
+  }, [mapData]);
+
+  const popRadius = (pop: number) =>
+    pop >= 80000 ? 7
+    : pop >= 40000 ? 5.5
+    : pop >= 20000 ? 4
+    : 3;
 
   const w = mapData?.width  ?? 1536;
   const h = mapData?.height ?? 751;
-
-  const stateColors: Record<number, string> = {};
-  if (mapData) {
-    for (const s of mapData.states) {
-      stateColors[s.i] = FACTION_COLORS[mapStateNameToFaction(s.name)] ?? '#8a7a6a';
-    }
-  }
-
   const activeCities = CITIES.filter(c => c.mapX && c.mapY);
 
   return (
@@ -105,68 +120,67 @@ export function MapPage() {
 
         <svg
           viewBox={`0 0 ${w} ${h}`}
-          className="w-full h-full"
+          className="w-full h-full block"
           onMouseLeave={() => setTooltip(null)}
         >
-          {/* Ocean base */}
-          <rect width={w} height={h} fill="#0d1a2a" />
+          {/* 1. Ocean fill */}
+          <rect x={0} y={0} width={w} height={h} fill="#0d1a2a" />
 
           {mapData && (
             <>
-              {/* Political cell polygons */}
-              {mapData.cellPolygons.map((cell, i) => {
-                if (cell.isOcean || cell.stateId === 0) {
+              {/* 2. Land mass base colour (the wildlands / unclaimed land underneath) */}
+              <g fill="#3a3528" stroke="#5a4f38" strokeWidth={0.6} fillRule="evenodd">
+                {mapData.landPaths.map((p, i) => (
+                  <path key={i} d={p.d} />
+                ))}
+              </g>
+
+              {/* 3. State-coloured province polygons (only claimed regions) */}
+              <g>
+                {mapData.provincePaths.map((p, i) => {
+                  const color = stateFactionColor[p.state] ?? FACTION_COLORS.neutral;
                   return (
-                    <polygon
+                    <path
                       key={i}
-                      points={cell.points}
-                      fill="#0d1a2a"
-                      stroke="#0d1a2a"
-                      strokeWidth={0.3}
+                      d={p.d}
+                      fill={color}
+                      fillOpacity={0.55}
+                      stroke={color}
+                      strokeOpacity={0.75}
+                      strokeWidth={0.4}
                     />
                   );
-                }
-                const baseColor = stateColors[cell.stateId] ?? '#8a7a6a';
-                return (
-                  <polygon
-                    key={i}
-                    points={cell.points}
-                    fill={baseColor + '55'}
-                    stroke={baseColor + '88'}
-                    strokeWidth={0.3}
-                  />
-                );
-              })}
+                })}
+              </g>
 
-              {/* Rivers */}
-              {mapData.rivers.map((r, i) => (
-                <path
-                  key={i}
-                  d={r.d}
-                  fill="none"
-                  stroke="#3a6a9a"
-                  strokeWidth={Math.max(0.5, r.width * 0.6)}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  opacity={0.6}
-                />
-              ))}
+              {/* 4. Borders */}
+              <g fill="none" stroke="#1a1a14" strokeWidth={0.8} strokeOpacity={0.7}>
+                {mapData.borderPaths.map((p, i) => (
+                  <path key={i} d={p.d} />
+                ))}
+              </g>
+
+              {/* 5. Rivers */}
+              <g fill="none" stroke="#3a6a9a" strokeLinecap="round" strokeLinejoin="round" opacity={0.7}>
+                {mapData.rivers.map((r, i) => (
+                  <path key={i} d={r.d} strokeWidth={Math.max(0.4, r.width * 0.5)} />
+                ))}
+              </g>
             </>
           )}
 
-          {/* City markers — always shown */}
+          {/* 6. City markers (lore-driven, always rendered) */}
           {activeCities.map(city => (
             <CityMarker
               key={city.id}
               city={city}
               r={popRadius(city.population)}
-              onHover={handleMouseMove}
+              onHover={handleHover}
               onLeave={() => setTooltip(null)}
             />
           ))}
         </svg>
 
-        {/* Hover tooltip */}
         {tooltip && (
           <div
             className="fixed z-50 bg-codex-dark border border-codex-border rounded-lg p-3 shadow-xl pointer-events-none text-sm"
@@ -176,10 +190,7 @@ export function MapPage() {
             <div className="text-codex-parchmentDim text-xs mt-0.5">
               Pop. {tooltip.population.toLocaleString()} · {tooltip.province}
             </div>
-            <div
-              className="text-xs mt-1 capitalize"
-              style={{ color: FACTION_COLORS[tooltip.faction] }}
-            >
+            <div className="text-xs mt-1 capitalize" style={{ color: FACTION_COLORS[tooltip.faction] }}>
               {FACTION_LABELS[tooltip.faction] ?? tooltip.faction} faction
             </div>
             <div className="text-codex-parchmentDim/60 text-xs mt-1.5">Click to view lore →</div>
@@ -190,7 +201,7 @@ export function MapPage() {
   );
 }
 
-// ── City marker component ────────────────────────────────────────────────────
+/* ── City marker ────────────────────────────────────────────────────────── */
 
 interface CityMarkerProps {
   city:    CityData;
@@ -213,9 +224,11 @@ function CityMarker({ city, r, onHover, onLeave }: CityMarkerProps) {
           <polygon
             points={`${city.mapX},${city.mapY - r * 1.4} ${city.mapX + r * 1.1},${city.mapY} ${city.mapX},${city.mapY + r * 1.4} ${city.mapX - r * 1.1},${city.mapY}`}
             fill={color}
+            stroke="#0a0d14"
+            strokeWidth={0.4}
           />
         ) : (
-          <circle cx={city.mapX} cy={city.mapY} r={r} fill={color} />
+          <circle cx={city.mapX} cy={city.mapY} r={r} fill={color} stroke="#0a0d14" strokeWidth={0.4} />
         )}
         <text
           x={city.mapX + r + 5}
@@ -224,6 +237,7 @@ function CityMarker({ city, r, onHover, onLeave }: CityMarkerProps) {
           fontSize={city.population >= 40000 ? 11 : 9}
           fontFamily="Cinzel, serif"
           opacity={0.95}
+          style={{ paintOrder: 'stroke', stroke: '#0a0d14', strokeWidth: 2 }}
         >
           {city.name}
         </text>

@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #0a0d14;
+    color: #e8d9c0;
+    font-family: 'Crimson Pro', Georgia, serif;
+    font-size: 18px;
+    line-height: 1.7;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cinzel', serif;
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: #12161f; }
+  ::-webkit-scrollbar-thumb { background: #2a3348; border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: #c9a84c; }
+
+  ::selection { background: rgba(201,168,76,0.3); }
+}
+
+@layer components {
+  .codex-divider {
+    @apply border-t border-codex-border my-6;
+    background: linear-gradient(to right, transparent, #c9a84c44, transparent);
+    height: 1px;
+    border: none;
+  }
+
+  .faction-chalexis { color: #c0c0c0; }
+  .faction-iaryx { color: #7ab5a0; }
+  .faction-halkir { color: #c9a84c; }
+  .faction-neutral { color: #a89880; }
+}

@@ -8,6 +8,7 @@ const NAV_LINKS = [
   { to: '/cities', label: 'Cities' },
   { to: '/factions', label: 'Factions & Houses' },
   { to: '/gods', label: 'Pantheon' },
+  { to: '/cosmology', label: 'Cosmology' },
 ];
 
 export function Navbar() {

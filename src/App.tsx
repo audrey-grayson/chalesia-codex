@@ -10,6 +10,7 @@ import { CityPage } from './pages/CityPage';
 import { FactionsPage } from './pages/FactionsPage';
 import { FactionPage } from './pages/FactionPage';
 import { GodsPage } from './pages/GodsPage';
+import { CosmologyPage } from './pages/CosmologyPage';
 
 function Root() {
   const { spec, updateSpec } = useCharacterSpec();
@@ -36,6 +37,10 @@ function GodsPageWrapper() {
   const { spec } = useCharacterSpec();
   return <GodsPage flags={getFlags(spec)} />;
 }
+function CosmologyPageWrapper() {
+  const { spec } = useCharacterSpec();
+  return <CosmologyPage flags={getFlags(spec)} />;
+}
 
 const router = createHashRouter([
   {
@@ -49,6 +54,7 @@ const router = createHashRouter([
       { path: 'factions', element: <FactionsPage /> },
       { path: 'factions/:id', element: <FactionPageWrapper /> },
       { path: 'gods', element: <GodsPageWrapper /> },
+      { path: 'cosmology', element: <CosmologyPageWrapper /> },
     ],
   },
 ]);

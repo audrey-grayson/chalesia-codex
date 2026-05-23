@@ -23,6 +23,8 @@ const BACKGROUND_OPTIONS: { value: Background; label: string }[] = [
   { value: 'merchant', label: 'Merchant' },
   { value: 'scholar', label: 'Scholar' },
   { value: 'priest', label: 'Priest' },
+  { value: 'acolyte', label: 'Acolyte' },
+  { value: 'hermit', label: 'Hermit' },
   { value: 'spy', label: 'Spy / Agent' },
   { value: 'criminal', label: 'Criminal' },
   { value: 'sailor', label: 'Sailor' },

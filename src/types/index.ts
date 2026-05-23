@@ -4,6 +4,7 @@ export type Species = 'human' | 'elf' | 'half-dragon' | 'orc' | 'dwarf' | 'gobli
 
 export type Background =
   | 'noble' | 'soldier' | 'merchant' | 'scholar' | 'priest'
+  | 'acolyte' | 'hermit'
   | 'spy' | 'criminal' | 'sailor' | 'skyknight' | 'commoner';
 
 export type KnowledgeSkill = 'history' | 'religion' | 'arcana' | 'nature' | 'investigation' | 'insight';

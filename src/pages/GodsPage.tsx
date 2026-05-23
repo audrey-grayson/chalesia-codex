@@ -13,11 +13,8 @@ export function GodsPage({ flags: _flags }: Props) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-10 px-4 max-w-4xl mx-auto">
       <h1 className="font-display text-4xl text-codex-parchment mb-2">The Pantheon</h1>
-      <p className="text-codex-parchmentDim mb-2">
+      <p className="text-codex-parchmentDim mb-8">
         Nine deities govern the Hanacene world — three Lawful, three Neutral, three Chaotic.
-      </p>
-      <p className="text-codex-parchmentDim/70 text-sm mb-8 italic">
-        Note on the afterlife: souls are split at death — life essence returns to the Positive Plane immediately, while consciousness rests in the Negative Plane (an Asphodel-like limbo) for roughly a century before filtering to the Outer Planes. This is why resurrection has a time limit, and why mortals can follow "evil" gods without fear of eternal damnation.
       </p>
 
       <section className="mb-10">

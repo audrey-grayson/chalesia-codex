@@ -129,33 +129,33 @@ function CosmologyDiagram({
           <stop offset="82%" stopColor="#c0dceb" stopOpacity="0.7" />
           <stop offset="100%" stopColor="#a8c8d8" stopOpacity="0" />
         </radialGradient>
-        {/* Faerie/Shadowfell rendered as p-orbital probability clouds:
-            high density at the lobe centre, asymptotically zero at the node
-            (the Material plane). Gradient radii reach past the lobe tip but
-            fall to zero opacity well before the node, giving the pinch its
-            characteristic "fades to nothing" feel. */}
-        <radialGradient id="feywildOrbital" cx="300" cy="130" r="115" gradientUnits="userSpaceOnUse">
-          <stop offset="0%"  stopColor="#92e0a4" stopOpacity="0.95" />
-          <stop offset="35%" stopColor="#7ad490" stopOpacity="0.75" />
-          <stop offset="65%" stopColor="#92e0a4" stopOpacity="0.35" />
+        {/* Faerie/Shadowfell rendered as orbital crescents — banana-shaped
+            arcs that nestle inside the dashed cone walls, opening toward the
+            Material plane. Gradient peaks at the crescent's centre and fades
+            toward both arc edges and the cusps, giving an orbital-cloud feel
+            while the geometric outline stays visibly crescent. */}
+        <radialGradient id="feywildOrbital" cx="300" cy="120" r="85" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"  stopColor="#b8f0c4" stopOpacity="0.95" />
+          <stop offset="40%" stopColor="#92e0a4" stopOpacity="0.75" />
+          <stop offset="75%" stopColor="#92e0a4" stopOpacity="0.35" />
           <stop offset="100%" stopColor="#92e0a4" stopOpacity="0" />
         </radialGradient>
-        <radialGradient id="feywildOrbitalActive" cx="300" cy="130" r="120" gradientUnits="userSpaceOnUse">
-          <stop offset="0%"  stopColor="#b8f0c4" stopOpacity="1" />
-          <stop offset="35%" stopColor="#92e0a4" stopOpacity="0.9" />
-          <stop offset="65%" stopColor="#92e0a4" stopOpacity="0.5" />
+        <radialGradient id="feywildOrbitalActive" cx="300" cy="120" r="95" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"  stopColor="#d8ffe0" stopOpacity="1" />
+          <stop offset="40%" stopColor="#92e0a4" stopOpacity="0.9" />
+          <stop offset="75%" stopColor="#92e0a4" stopOpacity="0.5" />
           <stop offset="100%" stopColor="#92e0a4" stopOpacity="0" />
         </radialGradient>
-        <radialGradient id="shadowfellOrbital" cx="300" cy="370" r="115" gradientUnits="userSpaceOnUse">
-          <stop offset="0%"  stopColor="#b09cd0" stopOpacity="0.95" />
-          <stop offset="35%" stopColor="#9a86bc" stopOpacity="0.75" />
-          <stop offset="65%" stopColor="#b09cd0" stopOpacity="0.35" />
+        <radialGradient id="shadowfellOrbital" cx="300" cy="380" r="85" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"  stopColor="#d4c0f0" stopOpacity="0.95" />
+          <stop offset="40%" stopColor="#b09cd0" stopOpacity="0.75" />
+          <stop offset="75%" stopColor="#b09cd0" stopOpacity="0.35" />
           <stop offset="100%" stopColor="#b09cd0" stopOpacity="0" />
         </radialGradient>
-        <radialGradient id="shadowfellOrbitalActive" cx="300" cy="370" r="120" gradientUnits="userSpaceOnUse">
-          <stop offset="0%"  stopColor="#d4c0f0" stopOpacity="1" />
-          <stop offset="35%" stopColor="#b09cd0" stopOpacity="0.9" />
-          <stop offset="65%" stopColor="#b09cd0" stopOpacity="0.5" />
+        <radialGradient id="shadowfellOrbitalActive" cx="300" cy="380" r="95" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"  stopColor="#eadcf8" stopOpacity="1" />
+          <stop offset="40%" stopColor="#b09cd0" stopOpacity="0.9" />
+          <stop offset="75%" stopColor="#b09cd0" stopOpacity="0.5" />
           <stop offset="100%" stopColor="#b09cd0" stopOpacity="0" />
         </radialGradient>
         <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
@@ -233,32 +233,33 @@ function CosmologyDiagram({
         strokeDasharray="2 6"
       />
 
-      {/* ─ Faerie & Shadowfell — p-orbital probability clouds.
-         Each is a teardrop-lobe path with a sharp pinch at the Material level
-         (the orbital node, where probability density is zero). The fill is a
-         radial gradient centred in the lobe's bulge, so density is highest
-         in the middle and asymptotically fades to zero at the pinch and at
-         the lobe edges. The two lobes together form a dumbbell p_z orbital. */}
+      {/* ─ Faerie & Shadowfell — orbital crescents within the cone bounds.
+         Each is a banana/crescent: an outer arc bulging away from the Material
+         and an inner arc dipping less, joined at two cusps. The cusps sit just
+         inside the cone walls (at y=170/y=330 where the cone is wide enough
+         to comfortably contain them) so the whole crescent stays within the
+         dashed cone envelope. Faerie opens downward (concave toward Material);
+         Shadowfell mirrors below. */}
       <ElectronLobe
         id="feywild"
-        pathD="M 300 250 C 310 220, 420 90, 300 45 C 180 90, 290 220, 300 250 Z"
+        pathD="M 242.86 170 C 252 80, 348 80, 357.14 170 C 340 130, 260 130, 242.86 170 Z"
         gradientId="feywildOrbital"
         gradientIdActive="feywildOrbitalActive"
         color="#92e0a4"
         label="Faerie"
-        labelX={300} labelY={135}
+        labelX={300} labelY={120}
         active={isActive('feywild')}
         opacity={dim('feywild')}
         onHover={onHover}
       />
       <ElectronLobe
         id="shadowfell"
-        pathD="M 300 250 C 310 280, 420 410, 300 455 C 180 410, 290 280, 300 250 Z"
+        pathD="M 242.86 330 C 252 420, 348 420, 357.14 330 C 340 370, 260 370, 242.86 330 Z"
         gradientId="shadowfellOrbital"
         gradientIdActive="shadowfellOrbitalActive"
         color="#b09cd0"
         label="Shadowfell"
-        labelX={300} labelY={375}
+        labelX={300} labelY={380}
         active={isActive('shadowfell')}
         opacity={dim('shadowfell')}
         onHover={onHover}

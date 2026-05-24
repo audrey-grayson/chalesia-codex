@@ -25,22 +25,8 @@ const MAT_R = 20;
 const ETH_R = 34;
 
 // faerie / shadowfell offsets (positions inside their cones)
-const FEY_Y = 140;
-const SHA_Y = CENTER_Y + (CENTER_Y - FEY_Y); // mirror below
-
-// width of cone at a given y (interpolate between apex and material level)
-function coneHalfWidthAt(y: number): number {
-  if (y <= CENTER_Y) {
-    const t = (CENTER_Y - y) / (CENTER_Y - POS_APEX_Y);
-    return CONE_HALF_WIDTH * (1 - t);
-  } else {
-    const t = (y - CENTER_Y) / (NEG_APEX_Y - CENTER_Y);
-    return CONE_HALF_WIDTH * (1 - t);
-  }
-}
-
-const FEY_HALF_W = coneHalfWidthAt(FEY_Y) * 0.7;
-const SHA_HALF_W = coneHalfWidthAt(SHA_Y) * 0.7;
+// (Faerie and Shadowfell are no longer cone-bounded ellipses — they are now
+// orbital rings around the Material+Aether system, see OrbitalRing below.)
 
 export function CosmologyPage({ flags }: Props) {
   const [hovered, setHovered] = useState<string>('material');
@@ -218,30 +204,32 @@ function CosmologyDiagram({
         strokeDasharray="2 6"
       />
 
-      {/* ─ Faerie ──────────────────────────────────────────────────────── */}
-      <PlaneEllipse
+      {/* ─ Faerie & Shadowfell — orbital rings around the Material+Aether.
+         Both ellipses are large enough to fully enclose the central system;
+         Faerie's centre sits slightly above the Material (peaking upward),
+         Shadowfell's mirrors below. They cross at two points either side of
+         the Aether, giving a layered Bohr-atom-style cosmological picture. */}
+      <OrbitalRing
         id="feywild"
-        cx={CENTER_X} cy={FEY_Y}
-        rx={FEY_HALF_W} ry={14}
-        fill="#92e0a4"
-        opacity={dim('feywild')}
-        active={isActive('feywild')}
-        onHover={onHover}
+        cx={CENTER_X} cy={215}
+        rx={130} ry={85}
+        color="#92e0a4"
         label="Faerie"
-        labelOffset={-26}
-      />
-
-      {/* ─ Shadowfell ──────────────────────────────────────────────────── */}
-      <PlaneEllipse
-        id="shadowfell"
-        cx={CENTER_X} cy={SHA_Y}
-        rx={SHA_HALF_W} ry={14}
-        fill="#b09cd0"
-        opacity={dim('shadowfell')}
-        active={isActive('shadowfell')}
+        labelDy={-95}
+        active={isActive('feywild')}
+        opacity={dim('feywild')}
         onHover={onHover}
+      />
+      <OrbitalRing
+        id="shadowfell"
+        cx={CENTER_X} cy={285}
+        rx={130} ry={85}
+        color="#b09cd0"
         label="Shadowfell"
-        labelOffset={34}
+        labelDy={95}
+        active={isActive('shadowfell')}
+        opacity={dim('shadowfell')}
+        onHover={onHover}
       />
 
       {/* ─ Aethereal shell (drawn before Material so Material overlays) ─ */}
@@ -348,36 +336,74 @@ function ConeLine({
   );
 }
 
-function PlaneEllipse({
-  id, cx, cy, rx, ry, fill, opacity, active, onHover, label, labelOffset,
+// ── Orbital ring (for Faerie / Shadowfell) ─────────────────────────────────
+// A stroke-only ellipse that wraps around the central Material+Aether system,
+// reminiscent of an electron orbital or planetary orbit. Flowing dash offset
+// gives a sense of motion; a small "particle" traces the ring.
+function OrbitalRing({
+  id, cx, cy, rx, ry, color, label, labelDy, active, opacity, onHover,
 }: {
   id: string; cx: number; cy: number; rx: number; ry: number;
-  fill: string; opacity: number; active: boolean;
-  onHover: (id: string) => void; label: string; labelOffset: number;
+  color: string; label: string; labelDy: number;
+  active: boolean; opacity: number; onHover: (id: string) => void;
 }) {
+  // Pre-compute 33 evenly-spaced points around the ellipse for the orbiting
+  // particle (32 segments + return to start). 32 is enough for smooth motion.
+  const STEPS = 32;
+  const orbitXs: number[] = [];
+  const orbitYs: number[] = [];
+  for (let i = 0; i <= STEPS; i++) {
+    const theta = (2 * Math.PI * i) / STEPS;
+    orbitXs.push(cx + rx * Math.cos(theta));
+    orbitYs.push(cy + ry * Math.sin(theta));
+  }
+
   return (
-    <g
-      style={{ cursor: 'pointer', opacity }}
-      onMouseEnter={() => onHover(id)}
-    >
+    <g style={{ opacity }}>
+      {/* Visible orbital ring — stroke only, dashed, with flowing offset */}
       <motion.ellipse
         cx={cx} cy={cy} rx={rx} ry={ry}
-        fill={fill}
-        opacity={active ? 1 : 0.92}
+        fill="none"
+        stroke={color}
+        strokeWidth={active ? 2.4 : 1.7}
+        strokeOpacity={active ? 1 : 0.75}
+        strokeDasharray="3 5"
         filter="url(#softGlow)"
-        animate={{
-          rx: active ? [rx, rx * 1.06, rx] : [rx, rx * 1.015, rx],
-          ry: active ? [ry, ry * 1.15, ry] : [ry, ry * 1.06, ry],
-        }}
-        transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+        animate={{ strokeDashoffset: [0, -16] }}
+        transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
+        style={{ pointerEvents: 'none' }}
       />
+      {/* Invisible thick stroke for hovering — easier hit target */}
+      <ellipse
+        cx={cx} cy={cy} rx={rx} ry={ry}
+        fill="none"
+        stroke="transparent"
+        strokeWidth={14}
+        pointerEvents="stroke"
+        style={{ cursor: 'pointer' }}
+        onMouseEnter={() => onHover(id)}
+      />
+      {/* Orbiting particle — a small glowing dot that traces the ring */}
+      <motion.circle
+        r={active ? 3.5 : 2.5}
+        fill={color}
+        filter="url(#softGlow)"
+        animate={{ cx: orbitXs, cy: orbitYs }}
+        transition={{
+          duration: active ? 8 : 14,
+          repeat: Infinity,
+          ease: 'linear',
+        }}
+        style={{ pointerEvents: 'none' }}
+      />
+      {/* Label sits outside the ring, at its vertical "peak" */}
       <text
-        x={cx} y={cy + labelOffset}
+        x={cx} y={cy + labelDy}
         textAnchor="middle"
         fontFamily="Cinzel, serif"
         fontSize="13"
-        fontWeight={active ? 600 : 400}
-        fill={fill}
+        fontWeight={active ? 600 : 500}
+        fill={color}
         opacity={1}
         style={{ pointerEvents: 'none' }}
       >

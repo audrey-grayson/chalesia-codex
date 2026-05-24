@@ -152,8 +152,35 @@ function CosmologyDiagram({
         </filter>
       </defs>
 
-      {/* ─ Faint star-field backdrop ──────────────────────────────────── */}
-      <Stars />
+      {/* ─ Astral Plane: the silver-starred medium that suspends everything else.
+         The background rect catches hover events on "empty" space → Astral. */}
+      <rect
+        x={0} y={0} width={VIEW_W} height={VIEW_H}
+        fill="transparent"
+        style={{ cursor: 'pointer' }}
+        onMouseEnter={() => onHover('astral')}
+      />
+      <Stars dimmed={hovered !== 'astral'} active={isActive('astral')} />
+      <text
+        x={CENTER_X} y={16}
+        textAnchor="middle"
+        fontFamily="Cinzel, serif"
+        fontSize="10"
+        letterSpacing="4"
+        fill="#d8e0ff"
+        opacity={isActive('astral') ? 1 : 0.55}
+        style={{ pointerEvents: 'none', textTransform: 'uppercase' }}
+      >
+        The Astral Plane
+      </text>
+
+      {/* ─ Elemental Planes (outside the cones) ─────────────────────────
+         Cones span x = 150…450 at y = 250 and narrow toward y = 40 and y = 460.
+         The four elementals sit comfortably outside the cone walls in each corner. */}
+      <Elemental id="air"   cx={55}  cy={130} fill="#c8e0e8" shape="ring"  label="Air"   active={isActive('air')}   opacity={dim('air')}   onHover={onHover} />
+      <Elemental id="fire"  cx={545} cy={130} fill="#e87850" shape="flame" label="Fire"  active={isActive('fire')}  opacity={dim('fire')}  onHover={onHover} />
+      <Elemental id="water" cx={55}  cy={370} fill="#4a8aba" shape="drop"  label="Water" active={isActive('water')} opacity={dim('water')} onHover={onHover} />
+      <Elemental id="earth" cx={545} cy={370} fill="#9a8060" shape="cube"  label="Earth" active={isActive('earth')} opacity={dim('earth')} onHover={onHover} />
 
       {/* ─ Dashed light-cone lines ────────────────────────────────────── */}
       {/* Upper cone */}
@@ -405,29 +432,147 @@ function EnergyPoint({
   );
 }
 
-// Procedurally placed faint stars in the background — purely decorative.
-function Stars() {
-  // Pre-computed pseudo-random positions (deterministic so it doesn't reshuffle on re-render)
-  // Coordinates fit within the 600 × 500 viewBox.
-  const stars: Array<[number, number, number]> = [
-    [ 40,  60, 0.6], [ 90, 130, 0.4], [120, 230, 0.5], [ 60, 320, 0.7],
-    [ 80, 400, 0.4], [ 40, 460, 0.5], [180,  90, 0.5], [220, 290, 0.6],
-    [420,  65, 0.5], [380, 175, 0.4], [460, 220, 0.7], [510, 340, 0.5],
-    [430, 430, 0.6], [560, 125, 0.4], [540, 280, 0.5], [490, 470, 0.4],
-    [150,  35, 0.4], [350,  35, 0.5], [200, 485, 0.4], [400, 490, 0.5],
+// The Astral Plane itself — a dense starfield that becomes the cosmological
+// "medium" in which all other planes are suspended. Pre-computed deterministic
+// positions, sized over the 600 × 500 viewBox. `dimmed` slightly fades when
+// another plane is focused so the Astral doesn't fight for attention;
+// `active` blazes it up when the Astral itself is hovered.
+function Stars({ dimmed, active }: { dimmed: boolean; active: boolean }) {
+  // [x, y, sizeRel, brightness]
+  const stars: Array<[number, number, number, number]> = [
+    // Far-left column
+    [15,  35, 1.2, 0.9],  [30,  90, 0.8, 0.55], [10, 160, 1.5, 0.95], [40, 215, 0.9, 0.6],
+    [20, 280, 1.1, 0.8],  [45, 340, 0.7, 0.5],  [15, 400, 1.3, 0.85], [35, 455, 0.9, 0.65], [50, 485, 0.8, 0.55],
+    // Inner left margin (just outside upper-left cone wall)
+    [70, 70, 1.4, 0.95],  [90, 195, 0.9, 0.6], [60, 305, 1.0, 0.7],   [100, 380, 1.2, 0.85], [80, 445, 0.8, 0.55], [105, 475, 1.1, 0.75],
+    // Top edge, between/around upper cone apex
+    [165, 25, 0.9, 0.6],  [220, 15, 1.3, 0.85], [275, 12, 0.8, 0.5], [330, 14, 1.1, 0.75], [380, 20, 0.9, 0.6], [435, 30, 1.2, 0.8],
+    // Bottom edge
+    [170, 485, 1.0, 0.7], [225, 492, 0.8, 0.5],[285, 488, 1.3, 0.85],[355, 490, 0.9, 0.6], [405, 482, 1.1, 0.75],
+    // Inner right margin
+    [495, 80, 0.9, 0.6],  [510, 180, 1.4, 0.95],[490, 290, 1.0, 0.7],[520, 360, 0.8, 0.55],[505, 425, 1.2, 0.85],[495, 470, 0.9, 0.6],
+    // Far-right column
+    [570, 50, 1.1, 0.75], [585, 115, 0.9, 0.6],[555, 175, 1.3, 0.9], [580, 235, 0.8, 0.55],[565, 295, 1.5, 0.95],
+    [585, 350, 1.0, 0.7], [555, 405, 0.9, 0.6],[580, 450, 1.2, 0.8], [565, 485, 0.8, 0.55],
+    // Sparse accents in the interior gaps (avoid stepping on planes)
+    [125, 130, 0.7, 0.45],[140, 370, 0.8, 0.5],[455, 150, 0.7, 0.45],[445, 365, 0.8, 0.5],
   ];
+
+  // When Astral is active, intensify; when something else is hovered, soften.
+  const mult = active ? 1.3 : dimmed ? 0.6 : 1;
+
   return (
-    <g>
-      {stars.map(([x, y, o], i) => (
+    <g style={{ pointerEvents: 'none' }}>
+      {stars.map(([x, y, size, brightness], i) => {
+        const b = Math.min(1, brightness * mult);
+        const r = size * (active ? 1.2 : 1);
+        return (
+          <motion.circle
+            key={i}
+            cx={x} cy={y} r={r}
+            fill="#e8d9c0"
+            animate={{ opacity: [b * 0.4, b, b * 0.4] }}
+            transition={{ duration: 2.5 + (i % 7) * 0.4, repeat: Infinity, ease: 'easeInOut' }}
+          />
+        );
+      })}
+      {/* A few larger "lantern" stars, with soft glow — anchors the eye in the
+          starfield and gives the Astral something to "blaze" when hovered. */}
+      {[[100, 250], [500, 250], [300, 30], [300, 470]].map(([x, y], i) => (
         <motion.circle
-          key={i}
-          cx={x} cy={y} r={0.9}
-          fill="#e8d9c0"
-          opacity={o}
-          animate={{ opacity: [o * 0.5, o, o * 0.5] }}
-          transition={{ duration: 3 + (i % 5), repeat: Infinity, ease: 'easeInOut' }}
+          key={`l${i}`}
+          cx={x} cy={y}
+          r={active ? 2.6 : 1.8}
+          fill="#fff4c0"
+          filter="url(#softGlow)"
+          animate={{ opacity: active ? [0.8, 1, 0.8] : [0.4, 0.6, 0.4] }}
+          transition={{ duration: 4 + i * 0.6, repeat: Infinity, ease: 'easeInOut' }}
         />
       ))}
+    </g>
+  );
+}
+
+// ── Elemental Planes ───────────────────────────────────────────────────────
+type ElementalShape = 'ring' | 'flame' | 'drop' | 'cube';
+
+function Elemental({
+  id, cx, cy, fill, shape, label, active, opacity, onHover,
+}: {
+  id: string; cx: number; cy: number; fill: string;
+  shape: ElementalShape; label: string;
+  active: boolean; opacity: number; onHover: (id: string) => void;
+}) {
+  const baseSize = 14;
+  const size = active ? baseSize * 1.2 : baseSize;
+
+  return (
+    <g
+      style={{ cursor: 'pointer', opacity }}
+      onMouseEnter={() => onHover(id)}
+    >
+      {/* Outer aura */}
+      <motion.circle
+        cx={cx} cy={cy} r={baseSize + 10}
+        fill={fill}
+        opacity={active ? 0.2 : 0.08}
+        animate={{
+          r: active
+            ? [baseSize + 10, baseSize + 16, baseSize + 10]
+            : [baseSize + 8,  baseSize + 12, baseSize + 8],
+        }}
+        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      {/* Glyph */}
+      <g filter="url(#softGlow)">
+        {shape === 'ring' && (
+          <>
+            <circle cx={cx} cy={cy} r={size}        fill="none" stroke={fill} strokeWidth={2.2} />
+            <circle cx={cx} cy={cy} r={size * 0.5}  fill={fill} opacity={0.6} />
+          </>
+        )}
+        {shape === 'flame' && (
+          // Teardrop-flame pointing up
+          <path
+            d={`M ${cx} ${cy - size}
+                C ${cx + size * 0.9} ${cy - size * 0.2}, ${cx + size * 0.8} ${cy + size * 0.7}, ${cx} ${cy + size * 0.9}
+                C ${cx - size * 0.8} ${cy + size * 0.7}, ${cx - size * 0.9} ${cy - size * 0.2}, ${cx} ${cy - size} Z`}
+            fill={fill}
+          />
+        )}
+        {shape === 'drop' && (
+          // Inverted teardrop (pointing down)
+          <path
+            d={`M ${cx} ${cy + size}
+                C ${cx + size * 0.9} ${cy + size * 0.2}, ${cx + size * 0.8} ${cy - size * 0.7}, ${cx} ${cy - size * 0.9}
+                C ${cx - size * 0.8} ${cy - size * 0.7}, ${cx - size * 0.9} ${cy + size * 0.2}, ${cx} ${cy + size} Z`}
+            fill={fill}
+          />
+        )}
+        {shape === 'cube' && (
+          // Diamond — solidity without a literal cube
+          <rect
+            x={cx - size * 0.85} y={cy - size * 0.85}
+            width={size * 1.7} height={size * 1.7}
+            fill={fill}
+            stroke="#4a3820"
+            strokeWidth={1}
+            transform={`rotate(45 ${cx} ${cy})`}
+          />
+        )}
+      </g>
+      <text
+        x={cx} y={cy + baseSize + 18}
+        textAnchor="middle"
+        fontFamily="Cinzel, serif"
+        fontSize="11"
+        fontWeight={active ? 600 : 500}
+        fill={fill}
+        opacity={1}
+        style={{ pointerEvents: 'none' }}
+      >
+        {label}
+      </text>
     </g>
   );
 }

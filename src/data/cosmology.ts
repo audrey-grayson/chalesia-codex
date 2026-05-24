@@ -73,6 +73,51 @@ export const PLANES: Record<string, PlaneData> = {
     color: '#0a0a0a',
     glow: '#3a1a3a',
   },
+  astral: {
+    id: 'astral',
+    name: 'The Astral Plane',
+    shortName: 'Astral',
+    tagline: 'The silver sea between the planes — the medium of thought itself.',
+    description:
+      'A starlit ocean of pure thought through which all the other planes are suspended. Travelers project into it via the silver cord — sever the cord and the body dies, the consciousness drifts forever. Eramane initiates speak of "reading the Astral" to glimpse distant minds or events. Time is meaningless here; thought is geography. The colour palette of the Astral is the colour palette of dreams.',
+    color: '#d8e0ff',
+  },
+  air: {
+    id: 'air',
+    name: 'The Elemental Plane of Air',
+    shortName: 'Air',
+    tagline: 'Boundless sky — an infinite vault of wind and storm.',
+    description:
+      'A plane of endless, breathable atmosphere shot through with cyclones the size of empires. Sylphs and djinn ride its currents. Scholars debate whether the wind sings or merely sounds like song; mystics insist it is both. Air is the most travelled of the elemental planes because falling from it does not, technically, hurt.',
+    color: '#c8e0e8',
+  },
+  fire: {
+    id: 'fire',
+    name: 'The Elemental Plane of Fire',
+    shortName: 'Fire',
+    tagline: 'An ocean of living flame — the forge that Kaynan envies.',
+    description:
+      'Endless rolling seas of fire, with islands of obsidian and brass floating in the inferno. Efreet build cities of basalt here. The plane is hostile to mortal life by an absurd margin, but its forges produce metals possible nowhere else. Tremaine red-dragon blood resonates faintly with this plane; some Aldaines claim a similar pull toward Water.',
+    color: '#e87850',
+  },
+  water: {
+    id: 'water',
+    name: 'The Elemental Plane of Water',
+    shortName: 'Water',
+    tagline: 'A boundless dark sea — Syltea\'s deep mirror.',
+    description:
+      'An ocean without surface, bottom, or shore. Marids drift through its abyssal currents alongside leviathans that have never seen the sun because there is no sun. Syltea\'s priests pour offerings into the open sea as gifts to this plane, and on certain tides the offerings return — or things shaped like them do.',
+    color: '#4a8aba',
+  },
+  earth: {
+    id: 'earth',
+    name: 'The Elemental Plane of Earth',
+    shortName: 'Earth',
+    tagline: 'A continent without sky — solid matter as far as thought goes.',
+    description:
+      'Imagine the deepest stone and then keep going. The plane of Earth is unbroken substance — granite, basalt, crystal, ore — extending in every direction without limit. Dao caravan-cities tunnel through it. Dwarves of Skeinland claim Strithos forged the first dwarves from a fragment of this plane, though dwarves claim many things.',
+    color: '#9a8060',
+  },
 };
 
 export const AFTERLIFE_NOTE = `Souls do not travel intact to their respective aligned planes. At the moment of death they are split in two — the life-essence returns to the Positive Plane almost immediately, while the consciousness falls to rest on the Negative Plane. There, souls are winnowed down to the very essence of their words and deeds, their personhood bleeding away back into the Elemental Planes over roughly a century (hence the resurrection time limit). Only that purest essence eventually joins the Outer Planes, once it has passed through the filtering process.

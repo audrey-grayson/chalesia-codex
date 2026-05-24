@@ -11,23 +11,23 @@ export const CITIES: CityData[] = [
     mapX: 614,
     mapY: 322,
     isCapital: true,
-    tagline: 'The Silver Seat — capital of the Hanacene Empire and throne of Princess Chalexis.',
+    tagline: 'Capital of the Hanacene Empire and seat of Princess Chalexis.',
     sections: [
       {
         id: 'overview',
-        content: `Hanach stands at the heart of the Thyalix plain, its skyline crowned by the Argent Spire — a tower of spell-hardened silver stone raised by the first Empress three centuries ago. A city of nearly a hundred thousand souls, it is the largest settlement in the known world and the center of imperial administration, trade, and military command.
+        content: `Hanach stands at the heart of the Thyalix plain — the capital that Veloth Neb, the half-silver-dragon sorcerer who founded the Second Empire nearly four centuries ago, established as the seat of his reconquest. A city of nearly a hundred thousand souls, its skyline is crowned by the **Argent Spire**, and it remains the largest settlement in the empire and the center of imperial administration, trade, and military command.
 
 The civil war has not diminished Hanach's physical grandeur, but it has hollowed its politics. The great noble families maintain townhouses here even as their swords back different claimants, and the streets hum with rumor, espionage, and quiet desperation. Food prices have risen; the eastern granary roads are no longer fully safe.`,
       },
       {
         id: 'politics',
         heading: 'Politics & Factions',
-        content: `Princess Chalexis rules from the Spire, supported by the Karindel family — the lords of Thyalix province and her chancellors for two generations. House Aldaine holds the eastern approaches and provides her most reliable military force. The city's patrician class, led by guild-masters and port authorities, broadly support Chalexis for the stability of trade, though their patience is not infinite.`,
+        content: `Princess Chalexis rules from the imperial palace, supported by the Karindel family — earls of Thyalix and the Empire's chancellors, with Hector Karindel serving as her closest advisor. House Aldaine holds the eastern approaches and provides her most reliable military force. The city's patrician class, led by guild-masters and port authorities, broadly support Chalexis for the stability of trade, though their patience is not infinite.`,
       },
       {
         id: 'skyknight-presence',
         heading: 'Skyknights of Hanach',
-        content: `The capital fields the empire's most prestigious Skyknight cadre — approximately eighty riders and their wyverns. They patrol the approaches to Thyalix and serve as a deterrent against any aerial assault. The wyvern pens beneath the Argent Spire are a source of civic pride; tours are occasionally granted to honored guests.`,
+        content: `The capital fields the empire's most prestigious Skyknight cadre. They patrol the approaches to Thyalix and serve as a deterrent against any aerial assault — and an unsubtle reminder that wyverns will only bond with riders carrying some trace of draconic blood, a privilege the empire's ruling lineages have kept very close.`,
         gate: {
           flags: ['background:skyknight', 'background:soldier', 'background:noble', 'skill:history'],
           label: 'Military knowledge',
@@ -37,14 +37,32 @@ The civil war has not diminished Hanach's physical grandeur, but it has hollowed
       {
         id: 'underworld',
         heading: 'The Undercity',
-        content: `Beneath Hanach's clean civic face lies a warren of old tunnels — some dating to the Fractured Kingdoms era — repurposed as smuggling routes, cult gathering places, and the meeting grounds of agents working for all three factions simultaneously. The Eramane priesthood runs an intelligence network from a supposedly legitimate archive in the Scholar's Quarter.`,
+        content: `Beneath Hanach's clean civic face lies a warren of old tunnels repurposed as smuggling routes, cult gathering places, and the meeting grounds of agents working for all three factions simultaneously.`,
         gate: {
           flags: ['background:spy', 'background:criminal'],
           label: 'Criminal contacts',
           hint: 'Those with underworld ties know what official histories omit.',
         },
       },
+      {
+        id: 'scholars-quarter',
+        heading: "The Scholar's Quarter",
+        // PLACEHOLDER — locked section reserved for canonical Scholar's Quarter
+        // lore (libraries, schools, priestly archives, who *actually* runs what).
+        // Awaiting source material from the Sync vault.
+        content: `*[Further detail on the Scholar's Quarter is yet to be written. Reserved for scholarly and arcane knowledge of the capital's libraries, schools, and priestly archives.]*`,
+        gate: {
+          flags: ['skill:history', 'skill:arcana', 'skill:religion', 'background:scholar', 'background:acolyte'],
+          label: 'Scholarly access',
+          hint: "Scholars and acolytes know the workings of the capital's archives.",
+        },
+      },
     ],
+    // Princess Chalexis rules from the imperial palace; Karindel are earls of
+    // Thyalix and Imperial Chancellors — together they constitute Hanach's
+    // ruling power. Aldaine "holds the eastern approaches" militarily but
+    // does not rule the capital, so they're related-but-not-ruler.
+    rulers: ['chalexis', 'karindel'],
     relatedLinks: [
       { label: 'House Karindel', to: '/factions/karindel' },
       { label: 'House Aldaine', to: '/factions/aldaine' },
@@ -65,25 +83,14 @@ The civil war has not diminished Hanach's physical grandeur, but it has hollowed
     sections: [
       {
         id: 'overview',
-        content: `Zorlatra grew from a military fort into the empire's industrial heart — it sits at the confluence of two rivers with access to iron deposits in the Enester hills. Its population of forty-two thousand makes it the second city of the empire, yet it holds only a barony, a slight that its lords have nursed for generations.
+        content: `Zorlatra sits at the confluence of two rivers in Enester province. With a population of forty-two thousand it is the second city of the empire, yet it holds only a barony — a slight that the Iventhyr line have nursed for generations.
 
-When General Iaryx declared for reform, Baron Iventhyr was the first of the grand lords to commit fully. The city's smiths, miners, and legionary veterans form the backbone of the Iaryx war effort.`,
-      },
-      {
-        id: 'industry',
-        heading: 'Industry & Economy',
-        content: `Zorlatra's foundries produce the empire's finest plate and mail. Three major guild-houses compete for contracts: the Hammers of Enester (smithing), the River Toll Brotherhood (transport), and the Assay House (banking and ore valuation). The city's prosperity has been tested by the civil war cutting trade routes to the capital.`,
-      },
-      {
-        id: 'military',
-        heading: 'Military Strength',
-        content: `The Third and Sixth Legions historically garrisoned Enester. Their remnants — approximately four thousand effectives between them — now serve Iaryx directly. The city's citadel holds stockpiles of arms sufficient to equip twice that number.`,
-        gate: {
-          flags: ['background:soldier', 'background:skyknight', 'skill:history'],
-          label: 'Military intelligence',
-        },
+When Imperator Iaryx declared for reform, Baron Iventhyr was the first of the grand lords to commit fully. Zorlatra's industry and veterans form the backbone of the Iaryx war effort.`,
       },
     ],
+    // Barons Iventhyr rule Zorlatra; Iaryx is the city's civil-war allegiance
+    // (already shown via the faction badge), not its ruler.
+    rulers: ['iventhyr'],
     relatedLinks: [
       { label: 'House Iventhyr', to: '/factions/iventhyr' },
       { label: 'General Iaryx (faction)', to: '/factions/iaryx' },
@@ -104,7 +111,7 @@ When General Iaryx declared for reform, Baron Iventhyr was the first of the gran
         id: 'overview',
         content: `Pelath is among the oldest cities in the empire — its predecessor settlement was founded during the Fractured Kingdoms era, and Lord Halkir claims unbroken lineage back to Seneca, founder of the First Empire. Whether or not that genealogy survives scrutiny, it has proven politically effective.
 
-The city is a natural trading hub, positioned between the empire's western coast and the interior. Halkir has used this to build alliances with Free City merchants and fund his faction through commerce rather than conquest.`,
+The city is a natural trading hub, sitting to the north along the Bay of Diamonds — controlling the inland sea trade that the bay funnels through it. Halkir has used this to build alliances with Free City merchants and fund his faction through commerce rather than conquest.`,
       },
       {
         id: 'legitimacy',
@@ -117,6 +124,7 @@ The city is a natural trading hub, positioned between the empire's western coast
         },
       },
     ],
+    rulers: ['halkir'],
     relatedLinks: [
       { label: 'Lord Halkir (faction)', to: '/factions/halkir' },
     ],
@@ -137,6 +145,8 @@ The city is a natural trading hub, positioned between the empire's western coast
         content: `Eorvar guards the eastern coastal approaches and serves as the main port connecting the Hanacene mainland with the elven-influenced islands to the east. House Solentis has ruled Y'lanthitar for five generations and currently backs Princess Chalexis — though their long rivalry with House Aldaine means that loyalty is contingent on continued imperial favor.`,
       },
     ],
+    // House Solentis has ruled Y'lanthitar from Eorvar for generations.
+    rulers: ['solentis'],
     relatedLinks: [
       { label: 'House Solentis', to: '/factions/solentis' },
       { label: 'Hanach', to: '/cities/hanach' },
@@ -155,18 +165,21 @@ The city is a natural trading hub, positioned between the empire's western coast
     sections: [
       {
         id: 'overview',
-        content: `Melonar is a city built on silver and dragon-blood. House Aldaine has held Aurem province for two centuries through an unbroken alliance with the imperial line, and their dragon-sorcerer lineage — traced to a silver dragon ancestor — gives them military power no amount of foot soldiers can match. The city itself is prosperous and quiet, more administrative seat than military hub.`,
+        content: `Melonar is a city built on silver and dragon-blood. House Aldaine has held Aurem for generations on the strength of an ancestral silver-dragon line — sorcerers reliable enough that one Aldaine on a battlefield is worth a company of knights. The city itself is prosperous and quiet, more administrative seat than military hub.`,
       },
       {
         id: 'dragon-blood',
         heading: 'The Aldaine Bloodline',
-        content: `House Aldaine's sorcerous power derives from a silver dragon ancestor several generations back — one of the last of the great metallics to take a mortal consort. The current lord is a capable sorcerer; his children, reportedly, are stronger still. House Tremaine, allied by marriage, carries red-dragon blood. The two houses are allied but wary of each other.`,
+        content: `House Aldaine's sorcerous power runs ancestral — silver-dragon blood old enough that every generation produces at least one capable sorcerer. Lord Maverick Aldaine holds the seat; Lady Salix, his wife, is Tremaine-born and carries the red-dragon blood of that house. Their two-centuries-old marriage alliance with Tremaine has produced the most consistent silver-and-red intermarriage in the empire, though the Tremaines' loss of their seat in Irdagar early in the war has made the alliance less politically useful than it once was.`,
         gate: {
           flags: ['skill:arcana', 'skill:history', 'background:noble'],
           label: 'Arcane or noble knowledge',
         },
       },
     ],
+    // Melonar is the seat of House Aldaine. Tremaine is a related allied
+    // house (Salix Aldaine née Tremaine) but rules Irdagar, not Aurem.
+    rulers: ['aldaine'],
     relatedLinks: [
       { label: 'House Aldaine', to: '/factions/aldaine' },
       { label: 'House Tremaine', to: '/factions/tremaine' },
@@ -198,14 +211,14 @@ The city is a natural trading hub, positioned between the empire's western coast
     province: 'Vorakrel',
     region: 'vorakrel',
     population: 4500,
-    faction: 'chalexis',
+    faction: 'iaryx',
     mapX: 362,
     mapY: 449,
-    tagline: 'A small southern port town — wind-bitten, war-thinned, and watched over by an old soldier with too few hands.',
+    tagline: 'A small southern port town in Vorakrel province — wind-bitten, war-thinned, and watched over by an old soldier with too few hands.',
     sections: [
       {
         id: 'overview',
-        content: `Krylanth is a coastal town of perhaps four and a half thousand souls, perched where the southern hills give way to the sea. Once an unremarkable fishing port, it has lately taken on the strained air of every settlement that the civil war has noticed but not fully consumed — the garrison is undermanned, the harbour traffic has thinned, and the magistrate looks more harried each season.
+        content: `Krylanth is a small coastal town of perhaps four and a half thousand souls, perched where the southern hills give way to the sea. It is not the seat of Vorakrel province (that is Firkrel, further inland) and answers to that seat only loosely — for practical purposes Krylanth runs itself, or fails to. Once an unremarkable fishing port, it has lately taken on the strained air of every settlement that the civil war has noticed but not fully consumed — the garrison is undermanned, the harbour traffic has thinned, and the magistrate looks more harried each season.
 
 It is the kind of town where strangers are watched but not turned away. There is honest work for those willing to take it, and dishonest work for those who know where to ask.`,
       },
@@ -221,14 +234,14 @@ It is the kind of town where strangers are watched but not turned away. There is
         heading: 'Inns & the Temple',
         content: `Two taverns serve the town. **The Dancing Rose** — "the Rose" to locals — is the respectable one: farmers and small merchants, talkative, theory-prone, just shy of comfortable lodgings at 7sp the night. **The Sea Skald** down on the docks is the other thing: dive prices (1sp), dive clientele, and fights that begin before the singing stops.
 
-The **Temple of the Nine** is one of the few stone buildings in town, with a shrine to each major god of the Hanacene pantheon. Its head priestess is a young Iriyal cleric — earnest, undertrained, and grateful for visitors who know the prayers.`,
+The **Temple of the Nine** is one of the few stone buildings in town, with a shrine to each major god of the Hanacene pantheon. Its head priestess is a young cleric of Alreth, the sun god — earnest, undertrained, and grateful for visitors who know the prayers.`,
       },
       {
         id: 'old-ruins',
         heading: 'The Ruins on the Hill',
         content: `Outside the town walls, on a rise overlooking the sea, stand the broken bones of a temple that pre-dates the Hanacene pantheon entirely — a place of the Old Gods. Locals avoid it; the priestess at the Temple of the Nine will not discuss it. There have been... reports, lately. The kind of reports a magistrate would post a reward to make stop.
 
-Scholars of the Old Faith would recognise the architecture as belonging to a Tiamat-aligned cult — the Dragon Queen's worshippers raised stone like this in many coastal places, before the First Empire suppressed them. Most such ruins are empty. Most.`,
+Scholars of the Old Faith would recognise the architecture as belonging to one of the Old Gods cults that the First Empire pushed out of the settled lands long ago. Which Old God is harder to say without going inside and looking. Most such ruins are empty. Most.`,
         gate: {
           flags: ['skill:history', 'skill:religion', 'background:acolyte', 'background:scholar'],
           label: 'Religious or scholarly knowledge',
@@ -250,7 +263,7 @@ Ser Volus knows the dock underworld exists and tolerates it. She lacks the men t
       {
         id: 'acenian-veterans',
         heading: 'Veterans of the Acenian Campaign',
-        content: `Ser Volus is one of perhaps a hundred Krylanthi who fought in the Acenian Campaign of two decades ago — the empire's last great northward push before the civil war stalled all ambition. The campaign expanded imperial influence into the northern coastal marches and is remembered fondly by its survivors, who form the backbone of every southern town's guard. They tend to be older, scarred, and unimpressed by the current war's slow rot.`,
+        content: `Ser Volus is one of perhaps a hundred Krylanthi who fought in the Acenian Campaign of two decades ago — General Iaryx's celebrated victories against Acenia, fought across the eastern straits. The campaign made Iaryx's reputation and is remembered fondly by its survivors, who form the backbone of more than one southern town's guard. They tend to be older, scarred, and unimpressed by the current war's slow rot.`,
         gate: {
           flags: ['background:soldier', 'background:skyknight', 'skill:history'],
           label: 'Military history',
@@ -258,7 +271,7 @@ Ser Volus knows the dock underworld exists and tolerates it. She lacks the men t
       },
     ],
     relatedLinks: [
-      { label: 'Princess Chalexis (faction)', to: '/factions/chalexis' },
+      { label: 'Imperator Iaryx (faction)', to: '/factions/iaryx' },
       { label: 'The Pantheon', to: '/gods' },
       { label: 'Cosmology — the Old Gods', to: '/cosmology' },
     ],
@@ -283,7 +296,7 @@ Where Hanach has lineage, Zorlatra has iron, and Pelath has tradition, Bellatara
       {
         id: 'government',
         heading: 'Government & Patriciate',
-        content: `Bellatara has no king, no count, no inherited seat. The city is governed by a council of merchant patricians drawn from its great trading houses — a body that elects a "First Patrician" for two-year terms and otherwise spends most of its energy ensuring no one member grows too powerful. There are no nobles by blood here. There are people with enough money to be treated as nobles, which the Bellatarans find a tidier arrangement.
+        content: `Bellatara has no king, no count, no inherited seat. The city is governed by a council of merchant patricians drawn from its great trading houses, who spend most of their political energy ensuring no one member grows too powerful. There are no nobles by blood here. There are people with enough money to be treated as nobles, which the Bellatarans find a tidier arrangement.
 
 By imperial reckoning Bellatara is technically part of Galta — the southern coast state that nominally encompasses the Free City coast — but Galta has not enforced a tax claim on Bellatara in living memory, and the city's patricians refer to Galtan officials with the careful politeness usually reserved for embarrassing relatives.`,
       },
@@ -296,10 +309,12 @@ The city's docks are continuously busy. Imperial grain ships from Aurem ride at 
       },
       {
         id: 'culture',
-        heading: 'Culture & Cosmopolis',
-        content: `Bellatara's streets are crowded with every species and dialect known to the archipelago. Temples to all nine Hanacene gods stand near temples to Strithos, shrines to obscure Skeinland ancestor-spirits, and at least one structure that the wise simply call "the Old Place." Citizens dress to display wealth, not status — there are no sumptuary laws here — and the city's craftsmen produce textiles, jewellery, and rare goods that fetch absurd prices in the imperial capital.
+        heading: 'Culture, Glass, and Light',
+        content: `Bellatara's streets are crowded with every species and dialect known to the archipelago. Temples to all nine Hanacene gods stand near temples to Strithos, shrines to obscure Skeinland ancestor-spirits, and at least one structure that the wise simply call "the Old Place." Citizens dress to display wealth, not status — there are no sumptuary laws here.
 
-The arts flourish. The Bellataran opera is internationally famous; its plays are scandalous, its music is bewildering, and its leading singers are paid more than imperial generals.`,
+The city's craftsmen are famous across the archipelago for two things above all: **glasswork** of a fineness no imperial workshop can match, and the **flameless lights** that hang in Bellataran ballrooms, salons, and the better merchant houses. The technique behind both is closely guarded by the glassblowers' families on the inner harbour, who have intermarried with the patriciate for generations and treat their trade secrets as a form of property more sacred than land.
+
+The arts flourish on the back of all this money. The Bellataran opera is internationally famous; its plays are scandalous, its music is bewildering, and its leading singers are paid more than imperial generals.`,
       },
       {
         id: 'pirates',
@@ -323,17 +338,6 @@ The civil war has been *very* good for Bellatara. The city has done business, op
           flags: ['background:noble', 'background:scholar', 'skill:history', 'skill:insight'],
           label: 'Political knowledge',
           hint: 'Those familiar with imperial politics know who really pays for the war.',
-        },
-      },
-      {
-        id: 'technology',
-        heading: 'The Inventors\' Quarter',
-        content: `Bellatara's wealth has bought it something rarer than gold: laboratories. A district along the inner harbour houses workshops where alchemists, artificers, and a small but determined community of arcane engineers pursue work that the imperial Calitax-priesthood would consider, depending on the day, irregular or heretical. The patriciate funds it without question, because the patriciate has learned that today's heresy is next decade's monopoly.
-
-What exactly comes out of these workshops is closely held. Visitors to Bellatara have seen optical devices, clockwork mechanisms, and at least one demonstration of an apparatus that produced light without flame. Imperial scholars who ask too closely tend to be politely escorted onto the next outbound ship.`,
-        gate: {
-          flags: ['skill:arcana', 'skill:investigation', 'background:scholar'],
-          label: 'Arcane or investigative training',
         },
       },
     ],

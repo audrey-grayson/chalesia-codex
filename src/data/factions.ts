@@ -8,11 +8,11 @@ export const FACTIONS: FactionData[] = [
     allegiance: 'chalexis',
     color: '#c0c0c0',
     crestImage: '/chalesia-codex/arms/Imperial-chalexis-crest.png',
-    tagline: 'The Silver Empress — legitimate heir, silver-dragon sorceress, ruler of Hanach.',
+    tagline: 'The Silver Princess — niece of the late Emperor Silegar, silver-dragon sorceress, ruler of Hanach.',
     sections: [
       {
         id: 'overview',
-        content: `Princess Chalexis is the only surviving child of the last Emperor and holds the clearest claim to the throne under imperial succession law. She controls Hanach — the capital — and the eastern provinces, supported by the dragon-blooded noble houses (Aldaine, Tremaine) and the urban patriciate who depend on imperial trade.
+        content: `Princess Chalexis is the niece of the late Emperor Silegar, who died sixteen years ago when his ship vanished en route to Skeinland — taking the emperor's only son and direct heir with him. She is not in the direct royal line, and her claim under strict succession law is contested; her strongest argument is the raw potency of her sorcery, the clearest manifestation of the silver-dragon bloodline in her generation. She controls Hanach — the capital — and the eastern provinces, supported by the dragon-blooded noble houses (Aldaine, Tremaine in name if no longer in power) and the urban patriciate who depend on imperial trade.
 
 Her political weakness is her perceived distance from common soldiers and provincials. Born to power, she has ruled from a position of magical and institutional strength, and this reads as arrogance to those who have lost the most in the civil war.`,
       },
@@ -44,16 +44,16 @@ Her political weakness is her perceived distance from common soldiers and provin
   },
   {
     id: 'iaryx',
-    name: 'General Iaryx',
+    name: 'Imperator Iaryx',
     type: 'civil-war-faction',
     allegiance: 'iaryx',
     color: '#7ab5a0',
     crestImage: '/chalesia-codex/arms/imperial-battle-crest.png',
-    tagline: 'The Iron General — commoner-born military commander rallying the west.',
+    tagline: 'The Iron Imperator — commoner-born military commander rallying the west. Styled both "Imperator" and "General" — the titles are used interchangeably.',
     sections: [
       {
         id: 'overview',
-        content: `General Iaryx has no royal blood and makes no apology for it. A career soldier who rose through merit — rare in an empire that traditionally reserves senior command for the nobility — he declared for "reform" sixteen years ago, couching a bid for power in the language of institutional grievance. His message has found a receptive audience among veterans, minor provincial lords resentful of the capital's favoritism, and anyone who has suffered for the dynasty's mistakes.`,
+        content: `Imperator Iaryx — the title and the older rank of General are used interchangeably, and he answers to both — has no royal blood and makes no apology for it. A career soldier who rose through merit, distinguished above all by his victories in the south against Acenia, he declared for "reform" sixteen years ago, couching a bid for power in the language of institutional grievance. His message has found a receptive audience among veterans, minor provincial lords resentful of the capital's favoritism, and anyone who has suffered for the dynasty's mistakes.`,
       },
       {
         id: 'power-base',
@@ -68,7 +68,7 @@ Her political weakness is her perceived distance from common soldiers and provin
   },
   {
     id: 'halkir',
-    name: 'Lord Halkir',
+    name: 'Halkir, King of Pelath',
     type: 'civil-war-faction',
     allegiance: 'halkir',
     color: '#c9a84c',
@@ -110,18 +110,18 @@ Her political weakness is her perceived distance from common soldiers and provin
     allegiance: 'chalexis',
     color: '#c0c0c0',
     crestImage: '/chalesia-codex/arms/aldaine-crest.png',
-    tagline: 'The Silver Sorcerers — dragon-blooded lords of Aurem, allied to the imperial line for two centuries.',
+    tagline: 'The Silver Sorcerers — dragon-blooded lords of Aurem, anchor of the Chalexis faction.',
     sections: [
       {
         id: 'overview',
-        content: `House Aldaine derives its unusual power from a silver dragon ancestor several generations back — one of the last great metallics to forge a lasting bond with a mortal line. The bloodline has bred true: every generation produces at least one capable sorcerer, and in the current generation the gifts are reportedly strong. This makes Aldaine members worth more on a battlefield than a company of knights.
+        content: `House Aldaine carries silver-dragon blood in its line — ancestral, not inherited from the imperial founder Veloth Neb, but old enough that the family's sorcerers have bred true for generations. Every generation produces at least one capable sorcerer, and in the current generation the gifts are reportedly strong. This makes Aldaine members worth more on a battlefield than a company of knights.
 
-Their alliance with the imperial line predates the current civil war by two centuries. They have backed Chalexis without hesitation.`,
+They have backed Chalexis without hesitation.`,
       },
       {
         id: 'banner-men',
         heading: 'Bannermen & Alliances',
-        content: `House Aldaine commands several lesser houses in Aurem and the adjacent province of Ilthyrion (House Mordell). Their marriage alliance with House Tremaine — who carry red-dragon blood — is recent and somewhat uneasy. The two families share a mutual enemy (House Solentis, to the north) and mutual interest in the Chalexis victory, but their political styles are very different.`,
+        content: `House Aldaine commands several lesser houses in Aurem and the adjacent province of Ilthyrion (House Mordell). Two centuries ago they sealed a marriage alliance with House Tremaine — who carry red-dragon blood — and the two lines have intermarried regularly since; the current Lady Aldaine, Salix, is Tremaine-born. That alliance has become politically awkward since the war began: Tremaine declared for Chalexis alongside the Aldaines, but Iaryx's armies have since overrun the Tremaine seat in Irdagar, leaving the Aldaines' principal allies titled but landless.`,
         gate: {
           flags: ['background:noble', 'skill:history'],
           label: 'Noble lineage knowledge',
@@ -179,16 +179,25 @@ Their alliance with the imperial line predates the current civil war by two cent
     allegiance: 'chalexis',
     color: '#b52222',
     crestImage: '/chalesia-codex/arms/house-tremaine-crest.png',
-    tagline: 'The Red Sorcerers — dragon-blooded allies of House Aldaine, carriers of chromatic fire.',
+    tagline: 'The Red Sorcerers — Barons of Irdagar, dragon-blooded carriers of chromatic fire; declared for Chalexis, dispossessed by Iaryx.',
     sections: [
       {
         id: 'overview',
-        content: `House Tremaine carries red-dragon blood — an unusual and somewhat disquieting distinction in a civilization where red dragons are regarded as predators and adversaries. The family has maintained respectability through consistent imperial service and a marriage alliance with House Aldaine. Their magic runs hotter and more aggressive than Aldaine silver-blood, which creates friction but also battlefield complementarity.`,
+        content: `House Tremaine carries red-dragon blood — an unusual and somewhat disquieting distinction in a civilization where red dragons are regarded as predators and adversaries. The family has maintained respectability through consistent imperial service and a two-centuries-old marriage alliance with House Aldaine. Lady Salix Aldaine, fourth child of the current Baron, is Tremaine-born; the Aldaine-Tremaine line is the most consistent silver-and-red intermarriage in the empire.`,
+      },
+      {
+        id: 'civil-war-fortunes',
+        heading: 'A Title Without a Seat',
+        content: `Tremaine declared for Princess Chalexis at the opening of the civil war, alongside their Aldaine in-laws. The decision proved costly. Their ancestral barony of Irdagar lies on the western side of the empire, exposed to Iaryx's advance, and his armies overran the province in the war's early years. The Tremaine line remains nobility by title and bloodline — and their sorcerers still serve in Chalexis's councils and on her battlefields — but they no longer hold their lands. Who actually administers Irdagar under Iaryx's authority today is an open question; the Tremaines themselves keep court-in-exile arrangements in Aurem and Hanach.`,
+        gate: {
+          flags: ['skill:history', 'background:noble', 'background:soldier'],
+          label: 'Knowledge of the western front',
+        },
       },
       {
         id: 'chromatic-stigma',
         heading: 'The Chromatic Stigma',
-        content: `Red-dragon blood is associated with Tiamat, the Dragon Queen of the Old Gods — a destructive primordial force. This association is uncomfortable for a house seeking imperial legitimacy. The Tremaines manage it through public Calitax devotion (the lawful dragon-goddess, antithesis of Tiamat) and by being very careful about which of their bloodline's abilities they display in public. The heat-affinity and fire-resistance are acceptable; the rage is not.`,
+        content: `Red-dragon blood is associated with Tiamat, the Dragon Queen of the Old Gods — a destructive primordial force. This association is uncomfortable for a house seeking imperial legitimacy. The Tremaines manage it through public Calitax devotion (the lawful dragon-goddess, antithesis of Tiamat) and by being careful about which of their bloodline's abilities they display in public. The heat-affinity and fire-resistance are acceptable; the rage is not.`,
         gate: {
           flags: ['skill:arcana', 'skill:history', 'skill:religion'],
           label: 'Arcane or religious scholarship',

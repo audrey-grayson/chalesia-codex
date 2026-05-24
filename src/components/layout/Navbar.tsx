@@ -9,6 +9,7 @@ const NAV_LINKS = [
   { to: '/factions', label: 'Factions & Houses' },
   { to: '/gods', label: 'Pantheon' },
   { to: '/cosmology', label: 'Cosmology' },
+  { to: '/calendar', label: 'Calendar' },
 ];
 
 export function Navbar() {

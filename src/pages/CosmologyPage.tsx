@@ -201,15 +201,17 @@ function CosmologyDiagram({
       <Elemental id="earth" cx={545} cy={370} fill="#a08860" shape="cube"  label="Parvata"  active={isActive('earth')} opacity={dim('earth')} onHover={onHover} />
 
       {/* ─ Dashed light-cone lines ────────────────────────────────────── */}
-      {/* Upper cone */}
+      {/* Upper cone — endpoints ordered apex→base so dashes flow FROM the
+         Plane of Life down toward the Material (matching the lower cone's
+         Material→Death flow, giving a continuous Life→Material→Death current). */}
       <ConeLine
-        x1={CENTER_X - CONE_HALF_WIDTH} y1={CENTER_Y}
-        x2={CENTER_X} y2={POS_APEX_Y}
+        x1={CENTER_X} y1={POS_APEX_Y}
+        x2={CENTER_X - CONE_HALF_WIDTH} y2={CENTER_Y}
         active={isActive('positive')}
       />
       <ConeLine
-        x1={CENTER_X + CONE_HALF_WIDTH} y1={CENTER_Y}
-        x2={CENTER_X} y2={POS_APEX_Y}
+        x1={CENTER_X} y1={POS_APEX_Y}
+        x2={CENTER_X + CONE_HALF_WIDTH} y2={CENTER_Y}
         active={isActive('positive')}
       />
       {/* Lower cone */}

@@ -58,6 +58,14 @@ export interface CityData {
   isCapital?: boolean;
   tagline: string;
   sections: LoreSection[];
+  /**
+   * Faction ids that *actually rule* this city — populates the top-right
+   * "Ruled by" panel on the city page. Distinct from `relatedLinks`, which
+   * may include factions that merely have interests or rivalries here. Leave
+   * empty (or omit) for cities with no noble ruler (e.g. self-governing
+   * Free Cities, frontier towns, small ports).
+   */
+  rulers?: string[];
   relatedLinks: Array<{ label: string; to: string }>;
 }
 

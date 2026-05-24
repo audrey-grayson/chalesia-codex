@@ -129,6 +129,35 @@ function CosmologyDiagram({
           <stop offset="82%" stopColor="#c0dceb" stopOpacity="0.7" />
           <stop offset="100%" stopColor="#a8c8d8" stopOpacity="0" />
         </radialGradient>
+        {/* Faerie/Shadowfell rendered as p-orbital probability clouds:
+            high density at the lobe centre, asymptotically zero at the node
+            (the Material plane). Gradient radii reach past the lobe tip but
+            fall to zero opacity well before the node, giving the pinch its
+            characteristic "fades to nothing" feel. */}
+        <radialGradient id="feywildOrbital" cx="300" cy="130" r="115" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"  stopColor="#92e0a4" stopOpacity="0.95" />
+          <stop offset="35%" stopColor="#7ad490" stopOpacity="0.75" />
+          <stop offset="65%" stopColor="#92e0a4" stopOpacity="0.35" />
+          <stop offset="100%" stopColor="#92e0a4" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="feywildOrbitalActive" cx="300" cy="130" r="120" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"  stopColor="#b8f0c4" stopOpacity="1" />
+          <stop offset="35%" stopColor="#92e0a4" stopOpacity="0.9" />
+          <stop offset="65%" stopColor="#92e0a4" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="#92e0a4" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="shadowfellOrbital" cx="300" cy="370" r="115" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"  stopColor="#b09cd0" stopOpacity="0.95" />
+          <stop offset="35%" stopColor="#9a86bc" stopOpacity="0.75" />
+          <stop offset="65%" stopColor="#b09cd0" stopOpacity="0.35" />
+          <stop offset="100%" stopColor="#b09cd0" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="shadowfellOrbitalActive" cx="300" cy="370" r="120" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"  stopColor="#d4c0f0" stopOpacity="1" />
+          <stop offset="35%" stopColor="#b09cd0" stopOpacity="0.9" />
+          <stop offset="65%" stopColor="#b09cd0" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="#b09cd0" stopOpacity="0" />
+        </radialGradient>
         <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
           <feGaussianBlur stdDeviation="3" result="blur" />
           <feMerge>
@@ -204,29 +233,32 @@ function CosmologyDiagram({
         strokeDasharray="2 6"
       />
 
-      {/* ─ Faerie & Shadowfell — orbital rings around the Material+Aether.
-         Both ellipses are large enough to fully enclose the central system;
-         Faerie's centre sits slightly above the Material (peaking upward),
-         Shadowfell's mirrors below. They cross at two points either side of
-         the Aether, giving a layered Bohr-atom-style cosmological picture. */}
-      <OrbitalRing
+      {/* ─ Faerie & Shadowfell — p-orbital probability clouds.
+         Each is a teardrop-lobe path with a sharp pinch at the Material level
+         (the orbital node, where probability density is zero). The fill is a
+         radial gradient centred in the lobe's bulge, so density is highest
+         in the middle and asymptotically fades to zero at the pinch and at
+         the lobe edges. The two lobes together form a dumbbell p_z orbital. */}
+      <ElectronLobe
         id="feywild"
-        cx={CENTER_X} cy={215}
-        rx={130} ry={85}
+        pathD="M 300 250 C 310 220, 420 90, 300 45 C 180 90, 290 220, 300 250 Z"
+        gradientId="feywildOrbital"
+        gradientIdActive="feywildOrbitalActive"
         color="#92e0a4"
         label="Faerie"
-        labelDy={-95}
+        labelX={300} labelY={135}
         active={isActive('feywild')}
         opacity={dim('feywild')}
         onHover={onHover}
       />
-      <OrbitalRing
+      <ElectronLobe
         id="shadowfell"
-        cx={CENTER_X} cy={285}
-        rx={130} ry={85}
+        pathD="M 300 250 C 310 280, 420 410, 300 455 C 180 410, 290 280, 300 250 Z"
+        gradientId="shadowfellOrbital"
+        gradientIdActive="shadowfellOrbitalActive"
         color="#b09cd0"
         label="Shadowfell"
-        labelDy={95}
+        labelX={300} labelY={375}
         active={isActive('shadowfell')}
         opacity={dim('shadowfell')}
         onHover={onHover}
@@ -336,76 +368,55 @@ function ConeLine({
   );
 }
 
-// ── Orbital ring (for Faerie / Shadowfell) ─────────────────────────────────
-// A stroke-only ellipse that wraps around the central Material+Aether system,
-// reminiscent of an electron orbital or planetary orbit. Flowing dash offset
-// gives a sense of motion; a small "particle" traces the ring.
-function OrbitalRing({
-  id, cx, cy, rx, ry, color, label, labelDy, active, opacity, onHover,
+// ── Electron lobe (for Faerie / Shadowfell) ────────────────────────────────
+// A p-orbital probability cloud: teardrop-shaped path with a sharp pinch at
+// the Material level, filled with a radial gradient that fades to zero at
+// the edges and the pinch. Two of these (above + below) form the dumbbell.
+function ElectronLobe({
+  id, pathD, gradientId, gradientIdActive, color, label, labelX, labelY,
+  active, opacity, onHover,
 }: {
-  id: string; cx: number; cy: number; rx: number; ry: number;
-  color: string; label: string; labelDy: number;
+  id: string; pathD: string; gradientId: string; gradientIdActive: string;
+  color: string; label: string; labelX: number; labelY: number;
   active: boolean; opacity: number; onHover: (id: string) => void;
 }) {
-  // Pre-compute 33 evenly-spaced points around the ellipse for the orbiting
-  // particle (32 segments + return to start). 32 is enough for smooth motion.
-  const STEPS = 32;
-  const orbitXs: number[] = [];
-  const orbitYs: number[] = [];
-  for (let i = 0; i <= STEPS; i++) {
-    const theta = (2 * Math.PI * i) / STEPS;
-    orbitXs.push(cx + rx * Math.cos(theta));
-    orbitYs.push(cy + ry * Math.sin(theta));
-  }
-
   return (
-    <g style={{ opacity }}>
-      {/* Visible orbital ring — stroke only, dashed, with flowing offset */}
-      <motion.ellipse
-        cx={cx} cy={cy} rx={rx} ry={ry}
+    <g style={{ cursor: 'pointer', opacity }} onMouseEnter={() => onHover(id)}>
+      {/* Probability cloud — gradient-filled lobe. Subtle breathing animation
+          on the path opacity sells the "cloud" feel without literal particles. */}
+      <motion.path
+        d={pathD}
+        fill={`url(#${active ? gradientIdActive : gradientId})`}
+        filter="url(#softGlow)"
+        animate={{ opacity: active ? [0.95, 1, 0.95] : [0.82, 0.92, 0.82] }}
+        transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+      />
+      {/* Faint contour to define the lobe edge when hovered — gives the
+          probability cloud a tangible "shell" boundary on focus. */}
+      <motion.path
+        d={pathD}
         fill="none"
         stroke={color}
-        strokeWidth={active ? 2.4 : 1.7}
-        strokeOpacity={active ? 1 : 0.75}
-        strokeDasharray="3 5"
-        filter="url(#softGlow)"
-        animate={{ strokeDashoffset: [0, -16] }}
-        transition={{ duration: 6, repeat: Infinity, ease: 'linear' }}
+        strokeWidth={1}
+        animate={{ strokeOpacity: active ? 0.55 : 0.25 }}
+        transition={{ duration: 0.25 }}
         style={{ pointerEvents: 'none' }}
       />
-      {/* Invisible thick stroke for hovering — easier hit target */}
-      <ellipse
-        cx={cx} cy={cy} rx={rx} ry={ry}
-        fill="none"
-        stroke="transparent"
-        strokeWidth={14}
-        pointerEvents="stroke"
-        style={{ cursor: 'pointer' }}
-        onMouseEnter={() => onHover(id)}
-      />
-      {/* Orbiting particle — a small glowing dot that traces the ring */}
-      <motion.circle
-        r={active ? 3.5 : 2.5}
-        fill={color}
-        filter="url(#softGlow)"
-        animate={{ cx: orbitXs, cy: orbitYs }}
-        transition={{
-          duration: active ? 8 : 14,
-          repeat: Infinity,
-          ease: 'linear',
-        }}
-        style={{ pointerEvents: 'none' }}
-      />
-      {/* Label sits outside the ring, at its vertical "peak" */}
+      {/* Label centred in the lobe's bulge (the "fattest" part of the cloud). */}
       <text
-        x={cx} y={cy + labelDy}
+        x={labelX} y={labelY}
         textAnchor="middle"
         fontFamily="Cinzel, serif"
         fontSize="13"
         fontWeight={active ? 600 : 500}
         fill={color}
         opacity={1}
-        style={{ pointerEvents: 'none' }}
+        style={{
+          pointerEvents: 'none',
+          paintOrder: 'stroke',
+          stroke: '#0a0d14',
+          strokeWidth: 3,
+        }}
       >
         {label}
       </text>

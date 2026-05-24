@@ -11,6 +11,7 @@ import { FactionsPage } from './pages/FactionsPage';
 import { FactionPage } from './pages/FactionPage';
 import { GodsPage } from './pages/GodsPage';
 import { CosmologyPage } from './pages/CosmologyPage';
+import { NotFoundPage } from './pages/NotFoundPage';
 
 function Root() {
   const { spec, updateSpec } = useCharacterSpec();
@@ -55,6 +56,8 @@ const router = createHashRouter([
       { path: 'factions/:id', element: <FactionPageWrapper /> },
       { path: 'gods', element: <GodsPageWrapper /> },
       { path: 'cosmology', element: <CosmologyPageWrapper /> },
+      // Catch-all 404
+      { path: '*', element: <NotFoundPage /> },
     ],
   },
 ]);

@@ -1,6 +1,7 @@
 import { useParams, useSearchParams } from 'react-router-dom';
 import { CITIES } from '../data/cities';
 import { LorePage } from '../components/LorePage';
+import { NotFoundPage } from './NotFoundPage';
 import type { ContentFlag } from '../types';
 
 interface Props { flags: Set<ContentFlag> }
@@ -18,7 +19,7 @@ export function CityPage({ flags }: Props) {
   const fromMap = searchParams.get('from') === 'map';
 
   const city = CITIES.find(c => c.id === id);
-  if (!city) return <div className="py-20 text-center text-codex-parchmentDim font-display">City not found.</div>;
+  if (!city) return <NotFoundPage />;
 
   return (
     <LorePage

@@ -1,6 +1,7 @@
 import { useParams } from 'react-router-dom';
 import { FACTIONS } from '../data/factions';
 import { LorePage } from '../components/LorePage';
+import { NotFoundPage } from './NotFoundPage';
 import type { ContentFlag } from '../types';
 
 interface Props { flags: Set<ContentFlag> }
@@ -15,7 +16,7 @@ const TYPE_LABELS: Record<string, string> = {
 export function FactionPage({ flags }: Props) {
   const { id } = useParams<{ id: string }>();
   const faction = FACTIONS.find(f => f.id === id);
-  if (!faction) return <div className="py-20 text-center text-codex-parchmentDim font-display">Entry not found.</div>;
+  if (!faction) return <NotFoundPage />;
 
   return (
     <LorePage

@@ -111,12 +111,12 @@ export const PLANES: Record<string, PlaneData> = {
   },
   earth: {
     id: 'earth',
-    name: 'Lamannia, the Twilight Forest',
-    shortName: 'Lamannia',
-    tagline: 'The primordial wild — endless forest, mountain, and storm, the source of all elemental essence.',
+    name: 'Parvata, the Eternal Mountain',
+    shortName: 'Parvata',
+    tagline: 'A single mountain without summit, foothill, or end — earth as it dreams of itself.',
     description:
-      'An untamed reflection of the world before civilisation: vast forests under perpetual twilight, mountains older than the gods, rivers that have never been named. Lamannia is the primordial source from which the elemental aspects of the material world were drawn — not "earth" alone but earth-as-wilderness, the substance of the natural world before it was carved into kingdoms. Druids and devout Myrai followers occasionally walk its edges; few who go deep ever truly return.',
-    color: '#7a9a60',
+      'Not a landscape but a substance. Parvata is the elemental aspect of earth made absolute: one continuous mountain, granite and basalt and crystal seam, extending in every direction without surface or bottom. There are tunnels and chambers within it carved by dao and stranger excavators, lit by veins of self-glowing ore, but no horizon — only more stone, more weight, more downward. Skeinland dwarves claim Strithos forged the first of their kind from a fragment of Parvata, and that the homing instinct dwarves feel toward deep places is Parvata calling its children back.',
+    color: '#a08860',
   },
 };
 

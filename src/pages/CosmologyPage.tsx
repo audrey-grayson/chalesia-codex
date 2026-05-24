@@ -183,7 +183,7 @@ function CosmologyDiagram({
       <Elemental id="air"   cx={55}  cy={130} fill="#c8e0e8" shape="ring"  label="Syrania"  active={isActive('air')}   opacity={dim('air')}   onHover={onHover} />
       <Elemental id="fire"  cx={545} cy={130} fill="#e87850" shape="flame" label="Fernia"   active={isActive('fire')}  opacity={dim('fire')}  onHover={onHover} />
       <Elemental id="water" cx={55}  cy={370} fill="#7ab8d8" shape="drop"  label="Risia"    active={isActive('water')} opacity={dim('water')} onHover={onHover} />
-      <Elemental id="earth" cx={545} cy={370} fill="#7a9a60" shape="cube"  label="Lamannia" active={isActive('earth')} opacity={dim('earth')} onHover={onHover} />
+      <Elemental id="earth" cx={545} cy={370} fill="#a08860" shape="cube"  label="Parvata"  active={isActive('earth')} opacity={dim('earth')} onHover={onHover} />
 
       {/* ─ Dashed light-cone lines ────────────────────────────────────── */}
       {/* Upper cone */}

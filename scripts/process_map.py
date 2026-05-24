@@ -130,16 +130,19 @@ def extract_land_paths(svg: str, features: list) -> list[dict]:
 
 
 def extract_province_paths(svg: str, provinces: list) -> list[dict]:
-    """Province body paths, joined with province-> state mapping."""
+    """Province body paths joined with province metadata (state, name, center burg)."""
     grp = extract_group(svg, "provincesBody")
     if not grp:
         return []
 
-    # Build i → state lookup from provinces JSON
-    prov_state = {}
+    prov_meta = {}
     for prov in provinces:
         if isinstance(prov, dict) and prov.get("i") is not None:
-            prov_state[prov["i"]] = prov.get("state", 0)
+            prov_meta[prov["i"]] = {
+                "state":    prov.get("state", 0),
+                "name":     prov.get("name", ""),
+                "burg":     prov.get("burg", 0),       # burg id of the province center, if any
+            }
 
     raw_paths = extract_paths(grp)
     result = []
@@ -150,9 +153,12 @@ def extract_province_paths(svg: str, provinces: list) -> list[dict]:
         if not m:
             continue
         i = int(m.group(1))
+        meta = prov_meta.get(i, {})
         result.append({
             "i":     i,
-            "state": prov_state.get(i, 0),
+            "state": meta.get("state", 0),
+            "name":  meta.get("name", ""),
+            "burg":  meta.get("burg", 0),
             "d":     p["d"],
         })
     return result

@@ -40,6 +40,10 @@ export interface ProvincePath {
   i: number;
   /** State id this province belongs to. */
   state: number;
+  /** Province name in the source map (may differ slightly from lore naming). */
+  name: string;
+  /** Burg id of the province seat — 0 if the province has no urban center. */
+  burg: number;
   d: string;
 }
 

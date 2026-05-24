@@ -77,23 +77,84 @@ export function MapPage() {
    * matches (or before the map JSON loads). This keeps the map authoritative
    * for positioning while cities.ts stays authoritative for narrative data. */
   const burgsByName = useMemo(() => {
-    const m: Record<string, { x: number; y: number }> = {};
+    const m: Record<string, { i: number; x: number; y: number }> = {};
     if (mapData) {
       for (const b of mapData.burgs) {
-        m[b.name.toLowerCase()] = { x: b.x, y: b.y };
+        m[b.name.toLowerCase()] = { i: b.i, x: b.x, y: b.y };
       }
     }
     return m;
   }, [mapData]);
 
-  const activeCities = CITIES
+  /* Tag each lore city with its full burg record (carries burg id + coords). */
+  const enrichedCities = CITIES
     .map(c => {
       const matched = burgsByName[c.name.toLowerCase()];
       return matched
-        ? { ...c, mapX: matched.x, mapY: matched.y }
-        : c;
+        ? { ...c, mapX: matched.x, mapY: matched.y, burgId: matched.i }
+        : { ...c, burgId: 0 };
     })
     .filter(c => c.mapX && c.mapY);
+
+  /* Province id → civil-war faction for Empire provinces.
+   *
+   * Two-pass match per lore city:
+   *   1. burg-id match — only works when the city is recorded as the
+   *      province seat in Azgaar (e.g. Hanach is the seat of Thylalix).
+   *   2. province-name fallback — match city.province (lore string) to
+   *      mapData.provincePaths[].name, case-insensitive, ignoring spaces.
+   *      Catches cases where the seat city in lore isn't the one Azgaar
+   *      tagged as the seat (e.g. Eorvar lives in Y'lanthitar but the
+   *      Azgaar seat is Ciravaar).
+   *
+   * Names are normalised by stripping whitespace + punctuation so minor
+   * variants ("Thyalix" vs "Thylalix") still match if close enough. */
+  const provinceFaction = useMemo(() => {
+    const m: Record<number, string> = {};
+    if (!mapData) return m;
+    const norm = (s: string) => s.toLowerCase().replace(/[^a-z]/g, '');
+
+    // index map provinces by normalised name (with a few near-misses)
+    const byName: Record<string, typeof mapData.provincePaths[number]> = {};
+    for (const p of mapData.provincePaths) {
+      if (p.name) byName[norm(p.name)] = p;
+    }
+
+    for (const city of enrichedCities) {
+      // Pass 1: burg-id
+      let prov = city.burgId
+        ? mapData.provincePaths.find(p => p.burg === city.burgId)
+        : undefined;
+
+      // Pass 2: name fallback — try the lore province name; if no exact hit
+      // try a few minor edits (drop doubled letters, add common variants).
+      if (!prov && city.province) {
+        const target = norm(city.province);
+        prov = byName[target];
+        if (!prov) {
+          // Try near-matches (one-letter difference)
+          for (const [k, v] of Object.entries(byName)) {
+            if (Math.abs(k.length - target.length) <= 1 && (k.includes(target) || target.includes(k))) {
+              prov = v;
+              break;
+            }
+          }
+        }
+      }
+
+      if (prov) m[prov.i] = city.faction;
+    }
+    return m;
+  }, [mapData, enrichedCities]);
+
+  /* Polities that actually have rendered provinces on the map. */
+  const presentStates = useMemo(() => {
+    if (!mapData) return [];
+    const ids = new Set(mapData.provincePaths.map(p => p.state));
+    return mapData.states.filter(
+      s => ids.has(s.i) && s.name && s.name !== 'Neutrals'
+    );
+  }, [mapData]);
 
   /* Pan + zoom — drives the SVG viewBox. Zoom level also scales markers
    * inversely so they stay roughly the same on-screen size as you zoom in. */
@@ -125,14 +186,12 @@ export function MapPage() {
         {mapData && (
           <div className="flex gap-x-3 gap-y-1 flex-wrap text-[11px] font-display">
             <span className="text-codex-parchmentDim/60 uppercase tracking-widest">Polities:</span>
-            {mapData.states
-              .filter(s => s.i > 0 && s.name && s.name !== 'Neutrals')
-              .map(s => (
-                <span key={s.i} className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-sm inline-block" style={{ background: s.color }} />
-                  <span className="text-codex-parchmentDim">{s.name}</span>
-                </span>
-              ))}
+            {presentStates.map(s => (
+              <span key={s.i} className="flex items-center gap-1">
+                <span className="w-2 h-2 rounded-sm inline-block" style={{ background: s.color }} />
+                <span className="text-codex-parchmentDim">{s.name}</span>
+              </span>
+            ))}
           </div>
         )}
 
@@ -192,22 +251,54 @@ export function MapPage() {
                 ))}
               </g>
 
-              {/* 3. Province polygons coloured by their state's original
-                 *    Azgaar political-map colour. Hover surfaces the state name. */}
+              {/* Diagonal-stripe patterns for civil-war factions. Each pattern
+                 * lays the state colour over alternating bands of the faction's
+                 * colour, so an Empire province visually reads as both
+                 * "Hanacene blue" and "Iaryx green" (or whatever). */}
+              <defs>
+                {Object.entries(FACTION_COLORS).map(([fac, fColor]) => {
+                  // Stripes only apply to civil-war factions inside the Empire.
+                  // Skip neutral/free/foreign — they never overlay the Empire base.
+                  if (!['chalexis','iaryx','halkir'].includes(fac)) return null;
+                  return (
+                    <pattern
+                      key={fac}
+                      id={`stripes-${fac}`}
+                      patternUnits="userSpaceOnUse"
+                      width={8}
+                      height={8}
+                      patternTransform="rotate(45)"
+                    >
+                      <rect width={8} height={8} fill="#8ea7e5" fillOpacity={0.55} />
+                      <rect width={4} height={8} fill={fColor} fillOpacity={0.75} />
+                    </pattern>
+                  );
+                })}
+              </defs>
+
+              {/* 3. Province polygons. Empire provinces with a known civil-war
+                 *    allegiance get a striped fill (state colour + faction
+                 *    colour); everything else gets a flat state colour. */}
               <g>
                 {mapData.provincePaths.map((p, i) => {
-                  const color = stateColor[p.state] ?? '#888';
-                  const name  = stateName[p.state] ?? '';
+                  const stateCol = stateColor[p.state] ?? '#888';
+                  const sname    = stateName[p.state] ?? '';
+                  const faction  = provinceFaction[p.i];
+                  const striped  = !!faction;
                   return (
                     <path
                       key={i}
                       d={p.d}
-                      fill={color}
-                      fillOpacity={0.45}
-                      stroke={color}
+                      fill={striped ? `url(#stripes-${faction})` : stateCol}
+                      fillOpacity={striped ? 1 : 0.45}
+                      stroke={stateCol}
                       strokeOpacity={0.85}
                       strokeWidth={0.4}
-                      onMouseMove={e => name && setStateHover({ name, x: e.clientX, y: e.clientY })}
+                      onMouseMove={e => sname && setStateHover({
+                        name: faction ? `${sname} — ${FACTION_LABELS[faction]}` : sname,
+                        x: e.clientX,
+                        y: e.clientY,
+                      })}
                       onMouseLeave={() => setStateHover(null)}
                     />
                   );
@@ -232,12 +323,12 @@ export function MapPage() {
 
           {/* 6. City markers (lore-driven, always rendered).
              * Inverse-scaled so they stay constant on-screen size at any zoom. */}
-          {activeCities.map(city => (
+          {enrichedCities.map(city => (
             <CityMarker
               key={city.id}
               city={city}
               r={popRadius(city.population) * inv}
-              labelSize={(city.population >= 40000 ? 11 : 9) * inv}
+              labelSize={(city.population >= 40000 ? 18 : 15) * inv}
               strokeBase={inv}
               onHover={handleHover}
               onLeave={() => setTooltip(null)}

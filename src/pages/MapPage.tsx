@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { CITIES } from '../data/cities';
 import type { CityData } from '../types';
 import { loadMapData, type ParsedMapData } from '../utils/mapParser';
+import { usePanZoom } from '../hooks/usePanZoom';
 
 /* ── Faction colour palette ─────────────────────────────────────────────── */
 
@@ -108,12 +109,23 @@ export function MapPage() {
     })
     .filter(c => c.mapX && c.mapY);
 
+  /* Pan + zoom — drives the SVG viewBox. Zoom level also scales markers
+   * inversely so they stay roughly the same on-screen size as you zoom in. */
+  const { viewBoxStr, zoom, reset, zoomBy, containerProps } = usePanZoom({
+    width: w,
+    height: h,
+    minZoom: 1,
+    maxZoom: 12,
+  });
+  // Inverse-scale factor — passed to markers so they stay constant on-screen size as zoom changes.
+  const inv = 1 / zoom;
+
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-8 px-4">
       <div className="mb-4">
         <h1 className="font-display text-3xl text-codex-parchment mb-1">The Hanacene Empire</h1>
         <p className="text-codex-parchmentDim text-sm">
-          Click a city to view its lore page. Colour indicates faction allegiance.
+          Scroll to zoom, drag to pan. Click a city to view its lore. Colour indicates faction allegiance.
         </p>
       </div>
 
@@ -131,8 +143,9 @@ export function MapPage() {
       </div>
 
       <div
+        {...containerProps}
         className="relative w-full overflow-hidden rounded-lg border border-codex-border"
-        style={{ aspectRatio: `${w}/${h}` }}
+        style={{ ...containerProps.style, aspectRatio: `${w}/${h}` }}
       >
         {loading && (
           <div className="absolute inset-0 flex items-center justify-center bg-[#0d1a2a] z-10">
@@ -140,8 +153,24 @@ export function MapPage() {
           </div>
         )}
 
+        {/* Zoom controls — sit above the SVG and consume their own pointer events */}
+        {!loading && (
+          <div
+            className="absolute top-3 right-3 z-20 flex flex-col gap-1.5"
+            onPointerDown={e => e.stopPropagation()}
+            onWheel={e => e.stopPropagation()}
+          >
+            <ZoomButton onClick={() => zoomBy(1.5)} label="Zoom in"   glyph="+" />
+            <ZoomButton onClick={() => zoomBy(1 / 1.5)} label="Zoom out" glyph="−" />
+            <ZoomButton onClick={reset} label="Reset view" glyph="⤾" />
+            <div className="mt-1 px-1.5 py-0.5 rounded bg-codex-dark/85 border border-codex-border text-[10px] font-display text-codex-parchmentDim text-center">
+              {zoom.toFixed(1)}×
+            </div>
+          </div>
+        )}
+
         <svg
-          viewBox={`0 0 ${w} ${h}`}
+          viewBox={viewBoxStr}
           className="w-full h-full block"
           onMouseLeave={() => setTooltip(null)}
         >
@@ -191,12 +220,15 @@ export function MapPage() {
             </>
           )}
 
-          {/* 6. City markers (lore-driven, always rendered) */}
+          {/* 6. City markers (lore-driven, always rendered).
+             * Inverse-scaled so they stay constant on-screen size at any zoom. */}
           {activeCities.map(city => (
             <CityMarker
               key={city.id}
               city={city}
-              r={popRadius(city.population)}
+              r={popRadius(city.population) * inv}
+              labelSize={(city.population >= 40000 ? 11 : 9) * inv}
+              strokeBase={inv}
               onHover={handleHover}
               onLeave={() => setTooltip(null)}
             />
@@ -223,43 +255,73 @@ export function MapPage() {
   );
 }
 
+/* ── Zoom button ───────────────────────────────────────────────────────── */
+
+interface ZoomButtonProps { onClick: () => void; label: string; glyph: string }
+function ZoomButton({ onClick, label, glyph }: ZoomButtonProps) {
+  return (
+    <button
+      onClick={onClick}
+      aria-label={label}
+      title={label}
+      className="w-8 h-8 flex items-center justify-center rounded bg-codex-dark/85 border border-codex-border text-codex-parchment hover:border-codex-gold hover:text-codex-gold transition-colors font-display text-base leading-none"
+    >
+      {glyph}
+    </button>
+  );
+}
+
 /* ── City marker ────────────────────────────────────────────────────────── */
 
 interface CityMarkerProps {
-  city:    CityData;
-  r:       number;
-  onHover: (city: CityData, e: React.MouseEvent) => void;
-  onLeave: () => void;
+  city:       CityData;
+  r:          number;
+  labelSize:  number;
+  strokeBase: number;
+  onHover:    (city: CityData, e: React.MouseEvent) => void;
+  onLeave:    () => void;
 }
 
-function CityMarker({ city, r, onHover, onLeave }: CityMarkerProps) {
+function CityMarker({ city, r, labelSize, strokeBase, onHover, onLeave }: CityMarkerProps) {
   const color = FACTION_COLORS[city.faction] ?? '#888';
+  // Suppress click navigation if the user was actually dragging (panning).
+  // We detect this by tracking pointerdown position vs pointerup position.
   return (
-    <Link to={`/cities/${city.id}?from=map`}>
+    <Link
+      to={`/cities/${city.id}?from=map`}
+      onPointerDown={e => { (e.currentTarget as unknown as { _downAt?: { x: number; y: number } })._downAt = { x: e.clientX, y: e.clientY }; }}
+      onClick={e => {
+        const tgt = e.currentTarget as unknown as { _downAt?: { x: number; y: number } };
+        const d = tgt._downAt;
+        if (d && (Math.abs(e.clientX - d.x) > 4 || Math.abs(e.clientY - d.y) > 4)) {
+          e.preventDefault();   // it was a pan, not a click
+        }
+      }}
+    >
       <g
         onMouseMove={e => onHover(city, e)}
         onMouseLeave={onLeave}
         className="cursor-pointer"
       >
-        <circle cx={city.mapX} cy={city.mapY} r={r + 5} fill="none" stroke={color} strokeWidth={0.8} opacity={0.2} />
+        <circle cx={city.mapX} cy={city.mapY} r={r + 5 * strokeBase} fill="none" stroke={color} strokeWidth={0.8 * strokeBase} opacity={0.2} />
         {city.isCapital ? (
           <polygon
             points={`${city.mapX},${city.mapY - r * 1.4} ${city.mapX + r * 1.1},${city.mapY} ${city.mapX},${city.mapY + r * 1.4} ${city.mapX - r * 1.1},${city.mapY}`}
             fill={color}
             stroke="#0a0d14"
-            strokeWidth={0.4}
+            strokeWidth={0.4 * strokeBase}
           />
         ) : (
-          <circle cx={city.mapX} cy={city.mapY} r={r} fill={color} stroke="#0a0d14" strokeWidth={0.4} />
+          <circle cx={city.mapX} cy={city.mapY} r={r} fill={color} stroke="#0a0d14" strokeWidth={0.4 * strokeBase} />
         )}
         <text
-          x={city.mapX + r + 5}
-          y={city.mapY + 4}
+          x={city.mapX + r + 5 * strokeBase}
+          y={city.mapY + 4 * strokeBase}
           fill={color}
-          fontSize={city.population >= 40000 ? 11 : 9}
+          fontSize={labelSize}
           fontFamily="Cinzel, serif"
           opacity={0.95}
-          style={{ paintOrder: 'stroke', stroke: '#0a0d14', strokeWidth: 2 }}
+          style={{ paintOrder: 'stroke', stroke: '#0a0d14', strokeWidth: 2 * strokeBase }}
         >
           {city.name}
         </text>

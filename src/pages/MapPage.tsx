@@ -84,7 +84,29 @@ export function MapPage() {
 
   const w = mapData?.width  ?? 1536;
   const h = mapData?.height ?? 751;
-  const activeCities = CITIES.filter(c => c.mapX && c.mapY);
+
+  /* Resolve city → map position by name lookup against the .map burgs.
+   * The hardcoded mapX/mapY in cities.ts are a fallback for when no burg
+   * matches (or before the map JSON loads). This keeps the map authoritative
+   * for positioning while cities.ts stays authoritative for narrative data. */
+  const burgsByName = useMemo(() => {
+    const m: Record<string, { x: number; y: number }> = {};
+    if (mapData) {
+      for (const b of mapData.burgs) {
+        m[b.name.toLowerCase()] = { x: b.x, y: b.y };
+      }
+    }
+    return m;
+  }, [mapData]);
+
+  const activeCities = CITIES
+    .map(c => {
+      const matched = burgsByName[c.name.toLowerCase()];
+      return matched
+        ? { ...c, mapX: matched.x, mapY: matched.y }
+        : c;
+    })
+    .filter(c => c.mapX && c.mapY);
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-8 px-4">

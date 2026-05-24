@@ -26,25 +26,6 @@ const FACTION_LABELS: Record<string, string> = {
   foreign:  'Foreign Powers',
 };
 
-/* The map's "states" are large polities (Hanacene Empire, Skeinland, Legia…).
- * The Hanacene civil-war factions are subdivisions inside the Empire — they
- * aren't separate states on the map. We tint the whole Empire one colour and
- * use city markers (already tagged by faction in cities.ts) to convey faction
- * detail at the city level. */
-function stateToFaction(stateName: string): string {
-  const n = stateName.toLowerCase();
-  if (n.includes('hanacene') || n.includes('empire')) return 'chalexis';   // imperial
-  if (n.includes('skeinland') || n.includes('legia') || n.includes('lania') ||
-      n.includes('inmoth')    || n.includes('atho')   || n.includes('intilea') ||
-      n.includes('acenia')    || n.includes('avonia') || n.includes('sandfair') ||
-      n.includes('abergoria') || n.includes('galta')  || n.includes('gravadalia')) {
-    return 'foreign';
-  }
-  if (n.includes('atros')) return 'free';
-  if (n === 'neutrals') return 'neutral';
-  return 'neutral';
-}
-
 /* ── Component ──────────────────────────────────────────────────────────── */
 
 export function MapPage() {
@@ -53,6 +34,7 @@ export function MapPage() {
   const [error,      setError]      = useState<string | null>(null);
   const [tooltip,    setTooltip]    = useState<CityData | null>(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+  const [stateHover, setStateHover] = useState<{ name: string; x: number; y: number } | null>(null);
 
   useEffect(() => {
     loadMapData()
@@ -66,15 +48,19 @@ export function MapPage() {
     setTooltipPos({ x: e.clientX, y: e.clientY });
   }, []);
 
-  /* Map state-id → faction colour, computed once per map load. */
-  const stateFactionColor = useMemo(() => {
-    const m: Record<number, string> = {};
+  /* Lookups indexed by state id, computed once per map load.
+   * - `stateColor`:  the original Azgaar political-map colour (state.color)
+   * - `stateName`:   for hover tooltips on region polygons */
+  const { stateColor, stateName } = useMemo(() => {
+    const color: Record<number, string> = {};
+    const name:  Record<number, string> = {};
     if (mapData) {
       for (const s of mapData.states) {
-        m[s.i] = FACTION_COLORS[stateToFaction(s.name)] ?? FACTION_COLORS.neutral;
+        color[s.i] = s.color || '#888';
+        name[s.i]  = s.name  || '';
       }
     }
-    return m;
+    return { stateColor: color, stateName: name };
   }, [mapData]);
 
   const popRadius = (pop: number) =>
@@ -125,7 +111,8 @@ export function MapPage() {
       <div className="mb-4">
         <h1 className="font-display text-3xl text-codex-parchment mb-1">The Hanacene Empire</h1>
         <p className="text-codex-parchmentDim text-sm">
-          Scroll to zoom, drag to pan. Click a city to view its lore. Colour indicates faction allegiance.
+          Scroll to zoom, drag to pan. Regions are coloured by political polity; city markers by civil-war faction.
+          Click a city to view its lore.
         </p>
       </div>
 
@@ -133,13 +120,32 @@ export function MapPage() {
         <p className="text-red-400 text-sm mb-4 font-display">Map data failed to load: {error}</p>
       )}
 
-      <div className="flex gap-4 mb-4 flex-wrap text-xs font-display">
-        {Object.entries(FACTION_LABELS).map(([f, label]) => (
-          <span key={f} className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full inline-block" style={{ background: FACTION_COLORS[f] }} />
-            <span className="text-codex-parchmentDim">{label}</span>
-          </span>
-        ))}
+      <div className="space-y-1.5 mb-4">
+        {/* Polities — original Azgaar state colours */}
+        {mapData && (
+          <div className="flex gap-x-3 gap-y-1 flex-wrap text-[11px] font-display">
+            <span className="text-codex-parchmentDim/60 uppercase tracking-widest">Polities:</span>
+            {mapData.states
+              .filter(s => s.i > 0 && s.name && s.name !== 'Neutrals')
+              .map(s => (
+                <span key={s.i} className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-sm inline-block" style={{ background: s.color }} />
+                  <span className="text-codex-parchmentDim">{s.name}</span>
+                </span>
+              ))}
+          </div>
+        )}
+
+        {/* Civil-war factions — city marker colours */}
+        <div className="flex gap-x-3 gap-y-1 flex-wrap text-[11px] font-display">
+          <span className="text-codex-parchmentDim/60 uppercase tracking-widest">Cities:</span>
+          {Object.entries(FACTION_LABELS).map(([f, label]) => (
+            <span key={f} className="flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full inline-block" style={{ background: FACTION_COLORS[f] }} />
+              <span className="text-codex-parchmentDim">{label}</span>
+            </span>
+          ))}
+        </div>
       </div>
 
       <div
@@ -186,19 +192,23 @@ export function MapPage() {
                 ))}
               </g>
 
-              {/* 3. State-coloured province polygons (only claimed regions) */}
+              {/* 3. Province polygons coloured by their state's original
+                 *    Azgaar political-map colour. Hover surfaces the state name. */}
               <g>
                 {mapData.provincePaths.map((p, i) => {
-                  const color = stateFactionColor[p.state] ?? FACTION_COLORS.neutral;
+                  const color = stateColor[p.state] ?? '#888';
+                  const name  = stateName[p.state] ?? '';
                   return (
                     <path
                       key={i}
                       d={p.d}
                       fill={color}
-                      fillOpacity={0.55}
+                      fillOpacity={0.45}
                       stroke={color}
-                      strokeOpacity={0.75}
+                      strokeOpacity={0.85}
                       strokeWidth={0.4}
+                      onMouseMove={e => name && setStateHover({ name, x: e.clientX, y: e.clientY })}
+                      onMouseLeave={() => setStateHover(null)}
                     />
                   );
                 })}
@@ -248,6 +258,16 @@ export function MapPage() {
               {FACTION_LABELS[tooltip.faction] ?? tooltip.faction} faction
             </div>
             <div className="text-codex-parchmentDim/60 text-xs mt-1.5">Click to view lore →</div>
+          </div>
+        )}
+
+        {/* State / polity hover label — only when not hovering a city */}
+        {stateHover && !tooltip && (
+          <div
+            className="fixed z-40 bg-codex-dark/90 border border-codex-border rounded px-2 py-1 shadow pointer-events-none font-display text-xs text-codex-parchment"
+            style={{ left: stateHover.x + 12, top: stateHover.y + 12 }}
+          >
+            {stateHover.name}
           </div>
         )}
       </div>

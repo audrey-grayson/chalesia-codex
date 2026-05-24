@@ -161,12 +161,14 @@ function CosmologyDiagram({
         onMouseEnter={() => onHover('astral')}
       />
       <Stars dimmed={hovered !== 'astral'} active={isActive('astral')} />
+      {/* Astral label tucked into the top-left corner — out of the way of
+          the Positive Energy point at the apex. */}
       <text
-        x={CENTER_X} y={16}
-        textAnchor="middle"
+        x={14} y={18}
+        textAnchor="start"
         fontFamily="Cinzel, serif"
-        fontSize="10"
-        letterSpacing="4"
+        fontSize="9"
+        letterSpacing="3"
         fill="#d8e0ff"
         opacity={isActive('astral') ? 1 : 0.55}
         style={{ pointerEvents: 'none', textTransform: 'uppercase' }}
@@ -176,11 +178,12 @@ function CosmologyDiagram({
 
       {/* ─ Elemental Planes (outside the cones) ─────────────────────────
          Cones span x = 150…450 at y = 250 and narrow toward y = 40 and y = 460.
-         The four elementals sit comfortably outside the cone walls in each corner. */}
-      <Elemental id="air"   cx={55}  cy={130} fill="#c8e0e8" shape="ring"  label="Air"   active={isActive('air')}   opacity={dim('air')}   onHover={onHover} />
-      <Elemental id="fire"  cx={545} cy={130} fill="#e87850" shape="flame" label="Fire"  active={isActive('fire')}  opacity={dim('fire')}  onHover={onHover} />
-      <Elemental id="water" cx={55}  cy={370} fill="#4a8aba" shape="drop"  label="Water" active={isActive('water')} opacity={dim('water')} onHover={onHover} />
-      <Elemental id="earth" cx={545} cy={370} fill="#9a8060" shape="cube"  label="Earth" active={isActive('earth')} opacity={dim('earth')} onHover={onHover} />
+         The four elementals sit comfortably outside the cone walls in each corner.
+         Names follow Eberron canon (Syrania/Fernia/Risia/Lamannia). */}
+      <Elemental id="air"   cx={55}  cy={130} fill="#c8e0e8" shape="ring"  label="Syrania"  active={isActive('air')}   opacity={dim('air')}   onHover={onHover} />
+      <Elemental id="fire"  cx={545} cy={130} fill="#e87850" shape="flame" label="Fernia"   active={isActive('fire')}  opacity={dim('fire')}  onHover={onHover} />
+      <Elemental id="water" cx={55}  cy={370} fill="#7ab8d8" shape="drop"  label="Risia"    active={isActive('water')} opacity={dim('water')} onHover={onHover} />
+      <Elemental id="earth" cx={545} cy={370} fill="#7a9a60" shape="cube"  label="Lamannia" active={isActive('earth')} opacity={dim('earth')} onHover={onHover} />
 
       {/* ─ Dashed light-cone lines ────────────────────────────────────── */}
       {/* Upper cone */}

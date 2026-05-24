@@ -84,39 +84,39 @@ export const PLANES: Record<string, PlaneData> = {
   },
   air: {
     id: 'air',
-    name: 'The Elemental Plane of Air',
-    shortName: 'Air',
-    tagline: 'Boundless sky — an infinite vault of wind and storm.',
+    name: 'Syrania, the Azure Sky',
+    shortName: 'Syrania',
+    tagline: 'A boundless vault of clear blue air — the realm of pure sky and contemplative peace.',
     description:
-      'A plane of endless, breathable atmosphere shot through with cyclones the size of empires. Sylphs and djinn ride its currents. Scholars debate whether the wind sings or merely sounds like song; mystics insist it is both. Air is the most travelled of the elemental planes because falling from it does not, technically, hurt.',
+      'An endless cloudless blue, where the air itself sings if you listen long enough. Floating spires of pale stone hang in nothing, and the beings who dwell here — sylphs, archons, and stranger things — drift among them on currents that follow no compass. The plane is associated with wisdom and patience as much as with the elemental power of air; Eramane initiates report that prolonged scrying brushes against its edges.',
     color: '#c8e0e8',
   },
   fire: {
     id: 'fire',
-    name: 'The Elemental Plane of Fire',
-    shortName: 'Fire',
+    name: 'Fernia, the Sea of Fire',
+    shortName: 'Fernia',
     tagline: 'An ocean of living flame — the forge that Kaynan envies.',
     description:
-      'Endless rolling seas of fire, with islands of obsidian and brass floating in the inferno. Efreet build cities of basalt here. The plane is hostile to mortal life by an absurd margin, but its forges produce metals possible nowhere else. Tremaine red-dragon blood resonates faintly with this plane; some Aldaines claim a similar pull toward Water.',
+      'Endless rolling seas of liquid flame, with islands of obsidian, brass, and slowly drifting basalt. Efreet cities glitter on the larger islands. The plane is hostile to mortal life by an absurd margin, but its forges produce metals impossible anywhere else. Tremaine red-dragon blood resonates faintly with Fernia; the family\'s sorcerers occasionally dream of flame-cities they have never seen.',
     color: '#e87850',
   },
   water: {
     id: 'water',
-    name: 'The Elemental Plane of Water',
-    shortName: 'Water',
-    tagline: 'A boundless dark sea — Syltea\'s deep mirror.',
+    name: 'Risia, the Plain of Ice',
+    shortName: 'Risia',
+    tagline: 'An infinite frozen waste — water made still, motion made cold.',
     description:
-      'An ocean without surface, bottom, or shore. Marids drift through its abyssal currents alongside leviathans that have never seen the sun because there is no sun. Syltea\'s priests pour offerings into the open sea as gifts to this plane, and on certain tides the offerings return — or things shaped like them do.',
-    color: '#4a8aba',
+      'Not a sea but a frozen one — Risia is the elemental aspect of water as preserved, slowed, eternal. Glaciers stretch beyond any horizon, crevasses descend into pale blue dark, and frostfell creatures move with patience that mocks mortal time. Syltea\'s priests recognise Risia as the sister-state of the tides she rules: water held still and remembered, rather than flowing and forgotten.',
+    color: '#7ab8d8',
   },
   earth: {
     id: 'earth',
-    name: 'The Elemental Plane of Earth',
-    shortName: 'Earth',
-    tagline: 'A continent without sky — solid matter as far as thought goes.',
+    name: 'Lamannia, the Twilight Forest',
+    shortName: 'Lamannia',
+    tagline: 'The primordial wild — endless forest, mountain, and storm, the source of all elemental essence.',
     description:
-      'Imagine the deepest stone and then keep going. The plane of Earth is unbroken substance — granite, basalt, crystal, ore — extending in every direction without limit. Dao caravan-cities tunnel through it. Dwarves of Skeinland claim Strithos forged the first dwarves from a fragment of this plane, though dwarves claim many things.',
-    color: '#9a8060',
+      'An untamed reflection of the world before civilisation: vast forests under perpetual twilight, mountains older than the gods, rivers that have never been named. Lamannia is the primordial source from which the elemental aspects of the material world were drawn — not "earth" alone but earth-as-wilderness, the substance of the natural world before it was carved into kingdoms. Druids and devout Myrai followers occasionally walk its edges; few who go deep ever truly return.',
+    color: '#7a9a60',
   },
 };
 

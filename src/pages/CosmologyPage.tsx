@@ -16,8 +16,8 @@ const VIEW_W = 600;
 const VIEW_H = 500;
 const CENTER_X = 300;
 const CENTER_Y = 250;
-const POS_APEX_Y = 40;       // Positive Energy point
-const NEG_APEX_Y = 460;      // Negative Energy point
+const POS_APEX_Y = 40;       // Plane of Life point
+const NEG_APEX_Y = 460;      // Plane of Death point
 const CONE_HALF_WIDTH = 150; // half-width of the cone at the Material level
 
 // material/ethereal radii
@@ -177,7 +177,7 @@ function CosmologyDiagram({
       />
       <Stars dimmed={hovered !== 'astral'} active={isActive('astral')} />
       {/* Astral label tucked into the top-left corner — out of the way of
-          the Positive Energy point at the apex. */}
+          the Plane of Life point at the apex. */}
       <text
         x={14} y={18}
         textAnchor="start"
@@ -322,7 +322,7 @@ function CosmologyDiagram({
         </text>
       </g>
 
-      {/* ─ Positive Energy Plane (top, white) ──────────────────────────── */}
+      {/* ─ Plane of Life (top, white) ──────────────────────────────────── */}
       <EnergyPoint
         id="positive"
         cx={CENTER_X} cy={POS_APEX_Y}
@@ -331,11 +331,11 @@ function CosmologyDiagram({
         active={isActive('positive')}
         opacity={dim('positive')}
         onHover={onHover}
-        label="Positive Energy"
+        label="Life"
         labelDy={-22}
       />
 
-      {/* ─ Negative Energy Plane (bottom, black) ───────────────────────── */}
+      {/* ─ Plane of Death (bottom, black) ──────────────────────────────── */}
       <EnergyPoint
         id="negative"
         cx={CENTER_X} cy={NEG_APEX_Y}
@@ -344,7 +344,7 @@ function CosmologyDiagram({
         active={isActive('negative')}
         opacity={dim('negative')}
         onHover={onHover}
-        label="Negative Energy"
+        label="Death"
         labelDy={28}
       />
     </svg>

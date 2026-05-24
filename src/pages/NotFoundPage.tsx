@@ -10,7 +10,7 @@ const EXCUSES = [
   },
   {
     deity:  'Soranus',
-    text:   'The god of fate marked this page for severance. A century in the Negative Plane, then perhaps it filters back.',
+    text:   'The god of fate marked this page for severance. A century in the Plane of Death, then perhaps it filters back.',
   },
   {
     deity:  'Raxos',

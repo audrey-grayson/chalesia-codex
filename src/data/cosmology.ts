@@ -42,7 +42,7 @@ export const PLANES: Record<string, PlaneData> = {
     tagline: 'A reflection of the Material, brighter and stranger — the realm of fey and elves.',
     description:
       'A parallel of the Material where colour saturates, beauty intensifies, and meaning runs closer to the surface. Time runs strange here. Faerie sits "above" the Material in cosmological terms, closer to the Positive Plane — life-essence is abundant, growth runs riot. Raxos is queen here. Elves and fey-blooded mortals can sometimes feel its pull.',
-    color: '#7ac88a',
+    color: '#92e0a4',
   },
   shadowfell: {
     id: 'shadowfell',
@@ -51,7 +51,7 @@ export const PLANES: Record<string, PlaneData> = {
     tagline: 'A reflection of the Material, dimmer and quieter — the realm of shadow and grief.',
     description:
       'The mirror to Faerie below. Colours bleach to grey, sound dulls, joy thins. The Shadowfell is closer to the Negative Plane — life essence drains slowly from those who linger. Some Eramane shadow-rites brush its edges. The deeply grief-stricken sometimes report dreams of a grey landscape: that is the Shadowfell calling.',
-    color: '#7a6a8a',
+    color: '#b09cd0',
   },
   positive: {
     id: 'positive',

@@ -7,23 +7,25 @@ import type { ContentFlag } from '../types';
 
 interface Props { flags: Set<ContentFlag> }
 
-// ── SVG geometry (viewBox 600 × 820) ──────────────────────────────────────
+// ── SVG geometry (viewBox 600 × 500) ──────────────────────────────────────
 // Hourglass-style "light cone" diagram. The Material/Aethereal sits at the
 // pinch of the hourglass (vertical centre). Cones widen outward from the
 // centre to wrap Faerie above and Shadowfell below, then narrow back down
 // to single points at the Energy Planes.
+const VIEW_W = 600;
+const VIEW_H = 500;
 const CENTER_X = 300;
-const CENTER_Y = 410;
-const POS_APEX_Y = 70;       // Positive Energy point
-const NEG_APEX_Y = 750;      // Negative Energy point
-const CONE_HALF_WIDTH = 180; // half-width of the cone at the Material level
+const CENTER_Y = 250;
+const POS_APEX_Y = 40;       // Positive Energy point
+const NEG_APEX_Y = 460;      // Negative Energy point
+const CONE_HALF_WIDTH = 150; // half-width of the cone at the Material level
 
 // material/ethereal radii
-const MAT_R = 22;
-const ETH_R = 38;
+const MAT_R = 20;
+const ETH_R = 34;
 
 // faerie / shadowfell offsets (positions inside their cones)
-const FEY_Y = 230;
+const FEY_Y = 140;
 const SHA_Y = CENTER_Y + (CENTER_Y - FEY_Y); // mirror below
 
 // width of cone at a given y (interpolate between apex and material level)
@@ -110,13 +112,14 @@ function CosmologyDiagram({
   hovered, onHover,
 }: { hovered: string; onHover: (id: string) => void }) {
   const isActive = (id: string) => hovered === id;
-  const dim = (id: string) => (hovered && hovered !== id ? 0.45 : 1);
+  // Non-hovered planes stay clearly readable (0.6) but visibly recede behind the active one.
+  const dim = (id: string) => (hovered && hovered !== id ? 0.6 : 1);
 
   return (
     <svg
-      viewBox="0 0 600 820"
+      viewBox={`0 0 ${VIEW_W} ${VIEW_H}`}
       className="w-full max-w-[600px] mx-auto block"
-      style={{ height: 'auto' }}
+      style={{ height: 'auto', maxHeight: '70vh' }}
     >
       <defs>
         <radialGradient id="positiveGlow">
@@ -136,8 +139,8 @@ function CosmologyDiagram({
         </radialGradient>
         <radialGradient id="etherealFill">
           <stop offset="0%" stopColor="#a8c8d8" stopOpacity="0" />
-          <stop offset="65%" stopColor="#a8c8d8" stopOpacity="0.05" />
-          <stop offset="85%" stopColor="#a8c8d8" stopOpacity="0.45" />
+          <stop offset="60%" stopColor="#a8c8d8" stopOpacity="0.12" />
+          <stop offset="82%" stopColor="#c0dceb" stopOpacity="0.7" />
           <stop offset="100%" stopColor="#a8c8d8" stopOpacity="0" />
         </radialGradient>
         <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
@@ -180,8 +183,8 @@ function CosmologyDiagram({
         x1={CENTER_X - CONE_HALF_WIDTH} y1={CENTER_Y}
         x2={CENTER_X + CONE_HALF_WIDTH} y2={CENTER_Y}
         stroke="#c9a84c"
-        strokeOpacity="0.18"
-        strokeWidth="0.8"
+        strokeOpacity="0.45"
+        strokeWidth="1"
         strokeDasharray="2 6"
       />
 
@@ -190,7 +193,7 @@ function CosmologyDiagram({
         id="feywild"
         cx={CENTER_X} cy={FEY_Y}
         rx={FEY_HALF_W} ry={14}
-        fill="#7ac88a"
+        fill="#92e0a4"
         opacity={dim('feywild')}
         active={isActive('feywild')}
         onHover={onHover}
@@ -203,7 +206,7 @@ function CosmologyDiagram({
         id="shadowfell"
         cx={CENTER_X} cy={SHA_Y}
         rx={SHA_HALF_W} ry={14}
-        fill="#7a6a8a"
+        fill="#b09cd0"
         opacity={dim('shadowfell')}
         active={isActive('shadowfell')}
         onHover={onHover}
@@ -220,25 +223,25 @@ function CosmologyDiagram({
         <motion.circle
           cx={CENTER_X} cy={CENTER_Y} r={ETH_R + 4}
           fill="url(#etherealFill)"
-          animate={{ opacity: isActive('ethereal') ? [0.7, 1, 0.7] : [0.45, 0.7, 0.45] }}
+          animate={{ opacity: isActive('ethereal') ? [0.85, 1, 0.85] : [0.65, 0.9, 0.65] }}
           transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
         />
         {/* Thin ring outline */}
         <circle
           cx={CENTER_X} cy={CENTER_Y} r={ETH_R}
           fill="none"
-          stroke="#a8c8d8"
-          strokeOpacity={isActive('ethereal') ? 0.7 : 0.35}
-          strokeWidth={isActive('ethereal') ? 1.2 : 0.8}
-          strokeDasharray="1 3"
+          stroke="#c0dceb"
+          strokeOpacity={isActive('ethereal') ? 1 : 0.75}
+          strokeWidth={isActive('ethereal') ? 1.8 : 1.2}
+          strokeDasharray="2 3"
         />
         <text
           x={CENTER_X + ETH_R + 12}
           y={CENTER_Y + 4}
           fontFamily="Cinzel, serif"
           fontSize="11"
-          fill="#a8c8d8"
-          opacity={isActive('ethereal') ? 1 : 0.7}
+          fill="#c0dceb"
+          opacity={isActive('ethereal') ? 1 : 0.95}
         >
           Aetherea
         </text>
@@ -305,9 +308,9 @@ function ConeLine({
   return (
     <motion.line
       x1={x1} y1={y1} x2={x2} y2={y2}
-      stroke={active ? '#e8c96a' : '#c9a84c'}
-      strokeOpacity={active ? 0.8 : 0.4}
-      strokeWidth={active ? 1.4 : 1}
+      stroke={active ? '#ffe8a0' : '#e8c96a'}
+      strokeOpacity={active ? 1 : 0.85}
+      strokeWidth={active ? 2.2 : 1.5}
       strokeDasharray="4 6"
       animate={{ strokeDashoffset: [0, -20] }}
       transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
@@ -330,11 +333,11 @@ function PlaneEllipse({
       <motion.ellipse
         cx={cx} cy={cy} rx={rx} ry={ry}
         fill={fill}
-        opacity={active ? 0.95 : 0.7}
+        opacity={active ? 1 : 0.92}
         filter="url(#softGlow)"
         animate={{
-          rx: active ? [rx, rx * 1.04, rx] : [rx, rx * 1.01, rx],
-          ry: active ? [ry, ry * 1.1, ry] : [ry, ry * 1.05, ry],
+          rx: active ? [rx, rx * 1.06, rx] : [rx, rx * 1.015, rx],
+          ry: active ? [ry, ry * 1.15, ry] : [ry, ry * 1.06, ry],
         }}
         transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
       />
@@ -342,9 +345,10 @@ function PlaneEllipse({
         x={cx} y={cy + labelOffset}
         textAnchor="middle"
         fontFamily="Cinzel, serif"
-        fontSize="12"
+        fontSize="13"
+        fontWeight={active ? 600 : 400}
         fill={fill}
-        opacity={active ? 1 : 0.85}
+        opacity={1}
         style={{ pointerEvents: 'none' }}
       >
         {label}
@@ -389,9 +393,10 @@ function EnergyPoint({
         x={cx} y={cy + labelDy}
         textAnchor="middle"
         fontFamily="Cinzel, serif"
-        fontSize="11"
-        fill={fill === '#ffffff' ? '#fff4c0' : '#a89cb5'}
-        opacity={active ? 1 : 0.8}
+        fontSize="12"
+        fontWeight={active ? 600 : 500}
+        fill={fill === '#ffffff' ? '#fff4c0' : '#c8b8d8'}
+        opacity={1}
         style={{ pointerEvents: 'none' }}
       >
         {label}
@@ -403,12 +408,13 @@ function EnergyPoint({
 // Procedurally placed faint stars in the background — purely decorative.
 function Stars() {
   // Pre-computed pseudo-random positions (deterministic so it doesn't reshuffle on re-render)
+  // Coordinates fit within the 600 × 500 viewBox.
   const stars: Array<[number, number, number]> = [
-    [40, 80, 0.6], [90, 200, 0.4], [120, 380, 0.5], [60, 520, 0.7],
-    [80, 660, 0.4], [40, 740, 0.5], [180, 140, 0.5], [220, 480, 0.6],
-    [420, 100, 0.5], [380, 280, 0.4], [460, 360, 0.7], [510, 560, 0.5],
-    [430, 700, 0.6], [560, 200, 0.4], [540, 460, 0.5], [490, 760, 0.4],
-    [150, 60, 0.4], [350, 60, 0.5], [200, 780, 0.4], [400, 800, 0.5],
+    [ 40,  60, 0.6], [ 90, 130, 0.4], [120, 230, 0.5], [ 60, 320, 0.7],
+    [ 80, 400, 0.4], [ 40, 460, 0.5], [180,  90, 0.5], [220, 290, 0.6],
+    [420,  65, 0.5], [380, 175, 0.4], [460, 220, 0.7], [510, 340, 0.5],
+    [430, 430, 0.6], [560, 125, 0.4], [540, 280, 0.5], [490, 470, 0.4],
+    [150,  35, 0.4], [350,  35, 0.5], [200, 485, 0.4], [400, 490, 0.5],
   ];
   return (
     <g>

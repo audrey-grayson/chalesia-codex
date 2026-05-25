@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import type { LoreSection } from '../types';
 import type { ContentFlag } from '../types';
 import { ContentGate } from './ContentGate';
+import { Markdown, InlineMarkdown } from './Markdown';
 import { FACTIONS } from '../data/factions';
 
 interface Props {
@@ -71,7 +72,9 @@ export function LorePage({
               </span>
             )}
             <h1 className="font-display text-4xl text-codex-parchment mb-3">{title}</h1>
-            <p className="text-codex-parchmentDim text-lg italic leading-relaxed">{tagline}</p>
+            <p className="text-codex-parchmentDim text-lg italic leading-relaxed">
+              <InlineMarkdown>{tagline}</InlineMarkdown>
+            </p>
           </div>
 
           {/* headerAside takes precedence over headerCrest; LorePage only
@@ -97,10 +100,10 @@ export function LorePage({
             )}
             {section.gate ? (
               <ContentGate gate={section.gate} flags={flags}>
-                <Prose text={section.content} />
+                <Markdown>{section.content}</Markdown>
               </ContentGate>
             ) : (
-              <Prose text={section.content} />
+              <Markdown>{section.content}</Markdown>
             )}
           </section>
         ))}
@@ -143,13 +146,3 @@ export function LorePage({
   );
 }
 
-function Prose({ text }: { text: string }) {
-  const paragraphs = text.trim().split(/\n\n+/);
-  return (
-    <div className="space-y-4">
-      {paragraphs.map((p, i) => (
-        <p key={i} className="text-codex-parchment leading-relaxed">{p.trim()}</p>
-      ))}
-    </div>
-  );
-}

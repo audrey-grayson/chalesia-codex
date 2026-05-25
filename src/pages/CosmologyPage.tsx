@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { PLANES, COSMOLOGY_GATE, AFTERLIFE_NOTE } from '../data/cosmology';
 import { hasAccess } from '../data/flags';
 import { ContentGate } from '../components/ContentGate';
+import { Markdown, InlineMarkdown } from '../components/Markdown';
 import type { ContentFlag } from '../types';
 
 interface Props { flags: Set<ContentFlag> }
@@ -77,17 +78,19 @@ export function CosmologyPage({ flags }: Props) {
             <h2 className="font-display text-2xl mb-1" style={{ color: active.color }}>
               {active.name}
             </h2>
-            <p className="text-codex-parchmentDim text-sm italic mb-4">{active.tagline}</p>
-            <p className="text-codex-parchment text-sm leading-relaxed">{active.description}</p>
+            <p className="text-codex-parchmentDim text-sm italic mb-4">
+              <InlineMarkdown>{active.tagline}</InlineMarkdown>
+            </p>
+            <div className="text-codex-parchment text-sm leading-relaxed">
+              <Markdown>{active.description}</Markdown>
+            </div>
           </motion.div>
         </aside>
       </div>
 
       <section className="mt-12 max-w-3xl">
         <h2 className="font-display text-2xl text-codex-gold mb-4">A Note on the Afterlife</h2>
-        {AFTERLIFE_NOTE.trim().split(/\n\n+/).map((p, i) => (
-          <p key={i} className="text-codex-parchment leading-relaxed mb-4">{p.trim()}</p>
-        ))}
+        <Markdown>{AFTERLIFE_NOTE}</Markdown>
       </section>
     </motion.div>
   );

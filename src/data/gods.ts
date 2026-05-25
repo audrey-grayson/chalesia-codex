@@ -1,14 +1,35 @@
 import type { GodData } from '../types';
+import { indexContent, getSection } from '../lib/content';
 
-export const GODS: GodData[] = [
+/**
+ * Prose lives in `src/content/gods/<id>.md`. Each god markdown file has three
+ * sections: `## tagline`, `## description`, and `## worshippers`. Structural
+ * metadata (alignment, domains, symbol, pantheon) lives in the shells here.
+ */
+
+const RAW = import.meta.glob('../content/gods/*.md', {
+  eager: true,
+  query: '?raw',
+  import: 'default',
+}) as Record<string, string>;
+
+const CONTENT = indexContent(RAW);
+
+interface GodShell {
+  id: string;
+  name: string;
+  alignment: GodData['alignment'];
+  domains: string[];
+  symbol?: string;
+  pantheon: GodData['pantheon'];
+}
+
+const SHELLS: GodShell[] = [
   {
     id: 'myrai',
     name: 'Myrai',
     alignment: 'chaotic',
     domains: ['Nature', 'Wilderness', 'Fertility', 'Sea'],
-    tagline: 'The Greenmother — goddess of the untamed world.',
-    description: `Myrai governs the untamed wilderness, the savage sea, and the fertility and growth of all living things. Everchanging and mercurial, she is nurturing and kind in summer, but cold and hateful in winter. She is usually depicted as a mother deity, though her sex is fluid — she has taken children with several other gods of differing genders.`,
-    worshippers: 'Farmers, druids, hunters, coastal communities, and anyone who depends on the natural world.',
     pantheon: 'hanacene',
   },
   {
@@ -16,9 +37,6 @@ export const GODS: GodData[] = [
     name: 'Alreth',
     alignment: 'lawful',
     domains: ['Harvest', 'Civilization', 'Protection', 'Home'],
-    tagline: 'The Sower — most-prayed-to of the Hanacene pantheon.',
-    description: `Known as the Sower, Alreth governs the harvest and is the most commonly prayed to of all the gods — attracting his favor is seen as critical for any agricultural settlement. His children with Myrai are a vast array of minor harvest gods. Simple and unassuming in depictions, soldiers defending their homes also pray to Alreth to return safely to their families.`,
-    worshippers: 'Farmers, soldiers fighting defensively, families, village communities.',
     pantheon: 'hanacene',
   },
   {
@@ -26,9 +44,6 @@ export const GODS: GodData[] = [
     name: 'Eramane',
     alignment: 'neutral',
     domains: ['Knowledge', 'Secrets', 'Shadow', 'Spies'],
-    tagline: 'The Veiled One — genderless god of knowledge, secrets, and shadow.',
-    description: `Genderless, depicted swathed in shadows with only a single eye visible. Priests often go fully covered and veiled. Patron of wizards, sages, and spies, Eramane governs the transfer, hoarding, and discovery of all knowledge. Their myths include an Odin-like trade in which they gave away the secret of their own identity in exchange for virtual omniscience. Associated with the Plane of Shadow.`,
-    worshippers: 'Wizards, scholars, sages, spies, archivists, and intelligence networks.',
     symbol: 'A single open eye wreathed in shadow.',
     pantheon: 'hanacene',
   },
@@ -37,9 +52,6 @@ export const GODS: GodData[] = [
     name: 'Raxos',
     alignment: 'chaotic',
     domains: ['Love', 'Art', 'Trickery', 'Fey', 'Luck'],
-    tagline: 'The Masked Lady — goddess of love, art, and fortunate lies.',
-    description: `Depicted with a tragicomic mask, Raxos is the patron of bards, thieves, the arts, and lies of all kinds. People pray to her for good fortune in social situations and success in performance. She is the goddess of the fey and of elves, and stands as the opposed sister of Calitax — chaos to her law, seduction to her conquest.`,
-    worshippers: 'Bards, thieves, lovers, elves, fey-blooded, performers, gamblers.',
     symbol: 'The comedy-tragedy mask.',
     pantheon: 'hanacene',
   },
@@ -48,11 +60,6 @@ export const GODS: GodData[] = [
     name: 'Calitax',
     alignment: 'lawful',
     domains: ['Conquest', 'Order', 'Law', 'Dragons'],
-    tagline: 'The Queen of Conquest — creator of metallic dragons, patron of generals and nobles.',
-    description: `Calitax created the first metallic dragons to build the first conquering army. She is worshipped by generals and nobles more than common soldiers — her portfolio is expanding the law of the land rather than defending it. Depicted with featureless silver eyes, sometimes with a crown of dragon horns. Justice is part of her domain, but it is the justice of empire, not mercy.
-
-Importantly, metallic dragons are not "good" in any simple sense — though most are Lawful.`,
-    worshippers: 'Military commanders, emperors, judges, imperial administrators, dragon-blooded noble houses.',
     symbol: 'A silver crown set with dragon horns.',
     pantheon: 'hanacene',
   },
@@ -61,9 +68,6 @@ Importantly, metallic dragons are not "good" in any simple sense — though most
     name: 'Iriyal',
     alignment: 'lawful',
     domains: ['Sun', 'Sky', 'Seasons', 'Agriculture'],
-    tagline: "The Sun Father — god of the sky and seasons, Alreth's divine companion.",
-    description: `God of the sun, sky, and seasons. Brother of Syltea, and the lover of Alreth — a relationship that has produced considerable agricultural-themed religious art. Iriyal represents the softer and more humanistic side of order, contrasting with Calitax's imperial severity. He governs the seasons that make Alreth's harvests possible.`,
-    worshippers: 'Farmers (alongside Alreth), travelers, those who work outdoors, solar monks.',
     pantheon: 'hanacene',
   },
   {
@@ -71,9 +75,6 @@ Importantly, metallic dragons are not "good" in any simple sense — though most
     name: 'Syltea',
     alignment: 'neutral',
     domains: ['Moon', 'Trade', 'Dreams', 'Tides', 'Sailors'],
-    tagline: 'The Silver Tide — goddess of the moon, commerce, and dreaming.',
-    description: `Syltea governs dreams, tides, and the connections that bind the archipelago together. She is the patron of sailors and merchants — coins traditionally bear the moon on one side to honor her. A perennial ally of Eramane (both hold sway over patterns and fate), her relationship with Soranus is a friendly rivalry: she understands the darkness of night but chooses connection over severance.`,
-    worshippers: 'Sailors, merchants, traders, dreamers, those who travel between islands.',
     symbol: 'A crescent moon, often appearing on one face of coins.',
     pantheon: 'hanacene',
   },
@@ -82,9 +83,6 @@ Importantly, metallic dragons are not "good" in any simple sense — though most
     name: 'Kaynan',
     alignment: 'neutral',
     domains: ['Invention', 'Forge', 'Creation', 'Craft'],
-    tagline: "The Architect — forge deity, inventor of civilization's tools.",
-    description: `God of invention and the forge, credited (alongside collaborating deities) with fundamental inventions: the ship, the wheel, weaponry. Kaynan is famously isolationist — unlike the more sociable members of the pantheon, he is rarely depicted in divine company. His relationship with Raxos is notably rocky; each claims credit for things they built together.`,
-    worshippers: 'Smiths, engineers, architects, inventors, anyone who makes things.',
     pantheon: 'hanacene',
   },
   {
@@ -92,9 +90,6 @@ Importantly, metallic dragons are not "good" in any simple sense — though most
     name: 'Soranus',
     alignment: 'chaotic',
     domains: ['Death', 'Fate', 'Undead', 'Fear'],
-    tagline: 'The Inevitable — god of death and fate, worshipped out of fear.',
-    description: `Widely feared and shunned, even by the other gods. He is not opposed to undeath — necromancer cults worship him openly. Prayer to Soranus is like protection money: he receives worship from people trying to avoid death — travelers, soldiers, the seriously ill. His rivalry with Syltea is friendly: both hold sway over patterns and fate, but she alone understands the darkness of night and the severing of connections. The shadowy cults of the Soranic Mysteries claim that one day all the other gods will die, leaving only Soranus remaining.`,
-    worshippers: 'Necromancers, the dying, soldiers, travelers, those who fear death most.',
     pantheon: 'hanacene',
   },
   {
@@ -102,9 +97,6 @@ Importantly, metallic dragons are not "good" in any simple sense — though most
     name: 'Strithos',
     alignment: 'chaotic',
     domains: ['War', 'Glory', 'Honor', 'Battle'],
-    tagline: 'The War God of Skeinland — interpreted so differently by orcs and dwarves that they kill each other over it.',
-    description: `Chief deity of Skeinland, worshipped primarily by orcs and dwarves — who hate each other due to a religious schism. He promises his followers escape from the normal afterlife (Dolor), offering instead a Valhalla-like existence to those who die gloriously in battle. Orcs understand him as the god of glorious combat and holy rage; dwarves see him as the enforcer of honor, law, and tradition. The schism is theological but the violence is very real.`,
-    worshippers: 'Skeinland orcs, Skeinland dwarves, warriors seeking a heroic death.',
     symbol: 'A broken sword (contested between orc and dwarf interpretations).',
     pantheon: 'skeinland',
   },
@@ -113,10 +105,23 @@ Importantly, metallic dragons are not "good" in any simple sense — though most
     name: 'Tiamat',
     alignment: 'chaotic',
     domains: ['Chaos', 'Destruction', 'Chromatic Dragons', 'Entropy'],
-    tagline: 'The Dragon Queen — progenitor of chromatic dragons, a dark mirror of Calitax.',
-    description: `A premodern primordial — one of the Old Gods who predated the current pantheon. Tiamat is the progenitor of chromatic dragons and a dark mirror of Calitax: legend says she copied the Queen of Conquest's designs to build a rival army of destruction. A Chaotic Evil god of chaos and destruction, her desire is to return the world to its elemental essence so that she may build a new Material Plane from the ashes. Her worshippers are rare and mostly hidden.`,
-    worshippers: 'Chromatic dragon cults, apocalyptic sects, chromatic dragons themselves.',
     symbol: 'A five-headed dragon silhouette.',
     pantheon: 'old-gods',
   },
 ];
+
+function hydrate(shell: GodShell): GodData {
+  return {
+    id: shell.id,
+    name: shell.name,
+    alignment: shell.alignment,
+    domains: shell.domains,
+    symbol: shell.symbol,
+    pantheon: shell.pantheon,
+    tagline: getSection(CONTENT, shell.id, 'tagline'),
+    description: getSection(CONTENT, shell.id, 'description'),
+    worshippers: getSection(CONTENT, shell.id, 'worshippers'),
+  };
+}
+
+export const GODS: GodData[] = SHELLS.map(hydrate);

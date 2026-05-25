@@ -1,6 +1,44 @@
-import type { FactionData } from '../types';
+import type { FactionData, LoreSection, GatedContent } from '../types';
+import { indexContent, getSection, getFrontmatter } from '../lib/content';
 
-export const FACTIONS: FactionData[] = [
+/**
+ * Prose AND gates live in `src/content/factions/<id>.md`:
+ *  - Prose: `## tagline`, `## overview`, etc.
+ *  - Frontmatter: `gates: { <section-id>: {...} }`.
+ *
+ * The structural shells below own only what doesn't make sense in markdown:
+ * ids, type, allegiance, colors, crest images, section ordering / headings,
+ * related links. To add / remove / reorder sections, edit this file AND
+ * the markdown file together — the loader will throw a clear error if a
+ * section id here has no matching `## <id>` heading in the markdown.
+ */
+
+const RAW = import.meta.glob('../content/factions/*.md', {
+  eager: true,
+  query: '?raw',
+  import: 'default',
+}) as Record<string, string>;
+
+const CONTENT = indexContent(RAW);
+
+/** Section shell — only the structural fields. Gate (if any) is in markdown. */
+interface SectionShell {
+  id: string;
+  heading?: string;
+}
+
+interface FactionShell {
+  id: string;
+  name: string;
+  type: FactionData['type'];
+  allegiance?: FactionData['allegiance'];
+  color: string;
+  crestImage?: string;
+  sections: SectionShell[];
+  relatedLinks: Array<{ label: string; to: string }>;
+}
+
+const SHELLS: FactionShell[] = [
   {
     id: 'chalexis',
     name: 'Princess Chalexis',
@@ -8,33 +46,10 @@ export const FACTIONS: FactionData[] = [
     allegiance: 'chalexis',
     color: '#c0c0c0',
     crestImage: '/chalesia-codex/arms/Imperial-chalexis-crest.png',
-    tagline: 'The Silver Princess — niece of the late Emperor Silegar, silver-dragon sorceress, ruler of Hanach.',
     sections: [
-      {
-        id: 'overview',
-        content: `Princess Chalexis is the niece of the late Emperor Silegar, who died sixteen years ago when his ship vanished en route to Skeinland — taking the emperor's only son and direct heir with him. She is not in the direct royal line, and her claim under strict succession law is contested; her strongest argument is the raw potency of her sorcery, the clearest manifestation of the silver-dragon bloodline in her generation. She controls Hanach — the capital — and the eastern provinces, supported by the dragon-blooded noble houses (Aldaine, Tremaine in name if no longer in power) and the urban patriciate who depend on imperial trade.
-
-Her political weakness is her perceived distance from common soldiers and provincials. Born to power, she has ruled from a position of magical and institutional strength, and this reads as arrogance to those who have lost the most in the civil war.`,
-      },
-      {
-        id: 'military',
-        heading: 'Military Assets',
-        content: `Chalexis commands the largest Skyknight force — approximately 120 wyvern-riders — and the First and Second Legions (somewhat degraded). House Aldaine's sorcerers are a force multiplier without parallel; a single capable dragon-blood can turn a field engagement. Her weakness is infantry numbers; the eastern provinces are less populous than the west.`,
-        gate: {
-          flags: ['background:soldier', 'background:skyknight', 'skill:history'],
-          label: 'Military knowledge',
-        },
-      },
-      {
-        id: 'character',
-        heading: 'The Person Behind the Title',
-        content: `Those who have met Chalexis in person describe a woman of remarkable composure — not cold, exactly, but precise. She listens more than she speaks. She has not yet taken consorts or named a succession, which her advisors find alarming; she seems to view the civil war as a problem to be solved before dynastics become relevant. Her silver-dragon lineage manifests in her eyes — vertical pupils in certain lighting — and occasionally in her presence, which can feel physically heavy, like pressure before a storm.`,
-        gate: {
-          flags: ['background:noble', 'background:spy', 'faction:chalexis'],
-          label: 'Court knowledge',
-          hint: 'Those with noble connections or factional access know her personally.',
-        },
-      },
+      { id: 'overview' },
+      { id: 'military', heading: 'Military Assets' },
+      { id: 'character', heading: 'The Person Behind the Title' },
     ],
     relatedLinks: [
       { label: 'Hanach (capital)', to: '/cities/hanach' },
@@ -49,17 +64,9 @@ Her political weakness is her perceived distance from common soldiers and provin
     allegiance: 'iaryx',
     color: '#7ab5a0',
     crestImage: '/chalesia-codex/arms/imperial-battle-crest.png',
-    tagline: 'The Iron Imperator — commoner-born military commander rallying the west. Styled both "Imperator" and "General" — the titles are used interchangeably.',
     sections: [
-      {
-        id: 'overview',
-        content: `Imperator Iaryx — the title and the older rank of General are used interchangeably, and he answers to both — has no royal blood and makes no apology for it. A career soldier who rose through merit, distinguished above all by his victories in the south against Acenia, he declared for "reform" sixteen years ago, couching a bid for power in the language of institutional grievance. His message has found a receptive audience among veterans, minor provincial lords resentful of the capital's favoritism, and anyone who has suffered for the dynasty's mistakes.`,
-      },
-      {
-        id: 'power-base',
-        heading: 'Power Base',
-        content: `The western provinces — Enester (Zorlatra), Chilix (Kleover), and Irdagar — are Iaryx's heartland. He has more foot soldiers than either rival, better supply discipline, and a genuine meritocratic officer corps. His weakness is the sky: he has fewer than forty Skyknights, none from dragon-blooded houses, and this limits his options against magical opponents.`,
-      },
+      { id: 'overview' },
+      { id: 'power-base', heading: 'Power Base' },
     ],
     relatedLinks: [
       { label: 'Zorlatra', to: '/cities/zorlatra' },
@@ -73,12 +80,8 @@ Her political weakness is her perceived distance from common soldiers and provin
     allegiance: 'halkir',
     color: '#c9a84c',
     crestImage: '/chalesia-codex/arms/pelath.png',
-    tagline: "The Merchant Lord — trader-king of Pelath, claiming descent from the First Empire's founder.",
     sections: [
-      {
-        id: 'overview',
-        content: `Lord Halkir presents himself as the restoration candidate — a return to the values of Seneca, the First Empire's founder, from whom he claims unbroken descent. His faction is the smallest militarily, but the richest. He has cultivated the Free Cities of the eastern straits and used their merchant networks to fund mercenaries, buy intelligence, and quietly build goodwill in cities that Chalexis and Iaryx have been taxing to exhaustion.`,
-      },
+      { id: 'overview' },
     ],
     relatedLinks: [
       { label: 'Pelath', to: '/cities/pelath' },
@@ -91,12 +94,8 @@ Her political weakness is her perceived distance from common soldiers and provin
     allegiance: 'chalexis',
     color: '#4a7ab5',
     crestImage: '/chalesia-codex/arms/karindel-crest.png',
-    tagline: "Lords of Thyalix and Chancellors of the Empire — the Chalexis faction's political backbone.",
     sections: [
-      {
-        id: 'overview',
-        content: `House Karindel has served as Imperial Chancellor for two generations, administering Thyalix province and managing the day-to-day business of empire while the royal family concerns itself with higher strategy. They are pragmatic bureaucrats more than warriors — their power is in networks, records, and appointments rather than swords. When Chalexis declared her claim, the Karindels were among the first to commit, understanding that their institutional position was inseparable from imperial legitimacy.`,
-      },
+      { id: 'overview' },
     ],
     relatedLinks: [
       { label: 'Hanach', to: '/cities/hanach' },
@@ -110,23 +109,9 @@ Her political weakness is her perceived distance from common soldiers and provin
     allegiance: 'chalexis',
     color: '#c0c0c0',
     crestImage: '/chalesia-codex/arms/aldaine-crest.png',
-    tagline: 'The Silver Sorcerers — dragon-blooded lords of Aurem, anchor of the Chalexis faction.',
     sections: [
-      {
-        id: 'overview',
-        content: `House Aldaine carries silver-dragon blood in its line — ancestral, not inherited from the imperial founder Veloth Neb, but old enough that the family's sorcerers have bred true for generations. Every generation produces at least one capable sorcerer, and in the current generation the gifts are reportedly strong. This makes Aldaine members worth more on a battlefield than a company of knights.
-
-They have backed Chalexis without hesitation.`,
-      },
-      {
-        id: 'banner-men',
-        heading: 'Bannermen & Alliances',
-        content: `House Aldaine commands several lesser houses in Aurem and the adjacent province of Ilthyrion (House Mordell). Two centuries ago they sealed a marriage alliance with House Tremaine — who carry red-dragon blood — and the two lines have intermarried regularly since; the current Lady Aldaine, Salix, is Tremaine-born. That alliance has become politically awkward since the war began: Tremaine declared for Chalexis alongside the Aldaines, but Iaryx's armies have since overrun the Tremaine seat in Irdagar, leaving the Aldaines' principal allies titled but landless.`,
-        gate: {
-          flags: ['background:noble', 'skill:history'],
-          label: 'Noble lineage knowledge',
-        },
-      },
+      { id: 'overview' },
+      { id: 'banner-men', heading: 'Bannermen & Alliances' },
     ],
     relatedLinks: [
       { label: 'Melonar (seat)', to: '/cities/melonar' },
@@ -141,12 +126,8 @@ They have backed Chalexis without hesitation.`,
     allegiance: 'chalexis',
     color: '#7a5c3a',
     crestImage: '/chalesia-codex/arms/solentis-crest.png',
-    tagline: "Lords of Y'lanthitar — rivals to House Aldaine and guardians of the eastern approaches.",
     sections: [
-      {
-        id: 'overview',
-        content: `House Solentis has ruled Y'lanthitar from Eorvar for five generations. They are formally Chalexis-aligned — not from love of the princess, but from calculation: a Chalexis victory preserves the imperial institutions that protect their trade interests. Their long rivalry with House Aldaine (competing for influence in the eastern provinces) means they are useful to the princess as a counterweight, even if she would prefer they be more enthusiastic.`,
-      },
+      { id: 'overview' },
     ],
     relatedLinks: [
       { label: 'Eorvar (seat)', to: '/cities/eorvar' },
@@ -160,12 +141,8 @@ They have backed Chalexis without hesitation.`,
     allegiance: 'iaryx',
     color: '#7ab5a0',
     crestImage: '/chalesia-codex/arms/iventhyr-crest.png',
-    tagline: 'Barons of Enester — controllers of Zorlatra, first grand lords to back General Iaryx.',
     sections: [
-      {
-        id: 'overview',
-        content: `The Iventhyrs have long resented holding a barony over Zorlatra — the empire's second city — while lesser populations to the north hold earldoms. When General Iaryx offered a new order, Baron Iventhyr saw an opportunity for both ideological alignment and practical advancement. His foundries and veterans have made Enester the industrial heart of the Iaryx campaign.`,
-      },
+      { id: 'overview' },
     ],
     relatedLinks: [
       { label: 'Zorlatra (seat)', to: '/cities/zorlatra' },
@@ -179,30 +156,10 @@ They have backed Chalexis without hesitation.`,
     allegiance: 'chalexis',
     color: '#b52222',
     crestImage: '/chalesia-codex/arms/house-tremaine-crest.png',
-    tagline: 'The Red Sorcerers — Barons of Irdagar, dragon-blooded carriers of chromatic fire; declared for Chalexis, dispossessed by Iaryx.',
     sections: [
-      {
-        id: 'overview',
-        content: `House Tremaine carries red-dragon blood — an unusual and somewhat disquieting distinction in a civilization where red dragons are regarded as predators and adversaries. The family has maintained respectability through consistent imperial service and a two-centuries-old marriage alliance with House Aldaine. Lady Salix Aldaine, fourth child of the current Baron, is Tremaine-born; the Aldaine-Tremaine line is the most consistent silver-and-red intermarriage in the empire.`,
-      },
-      {
-        id: 'civil-war-fortunes',
-        heading: 'A Title Without a Seat',
-        content: `Tremaine declared for Princess Chalexis at the opening of the civil war, alongside their Aldaine in-laws. The decision proved costly. Their ancestral barony of Irdagar lies on the western side of the empire, exposed to Iaryx's advance, and his armies overran the province in the war's early years. The Tremaine line remains nobility by title and bloodline — and their sorcerers still serve in Chalexis's councils and on her battlefields — but they no longer hold their lands. Who actually administers Irdagar under Iaryx's authority today is an open question; the Tremaines themselves keep court-in-exile arrangements in Aurem and Hanach.`,
-        gate: {
-          flags: ['skill:history', 'background:noble', 'background:soldier'],
-          label: 'Knowledge of the western front',
-        },
-      },
-      {
-        id: 'chromatic-stigma',
-        heading: 'The Chromatic Stigma',
-        content: `Red-dragon blood is associated with Tiamat, the Dragon Queen of the Old Gods — a destructive primordial force. This association is uncomfortable for a house seeking imperial legitimacy. The Tremaines manage it through public Calitax devotion (the lawful dragon-goddess, antithesis of Tiamat) and by being careful about which of their bloodline's abilities they display in public. The heat-affinity and fire-resistance are acceptable; the rage is not.`,
-        gate: {
-          flags: ['skill:arcana', 'skill:history', 'skill:religion'],
-          label: 'Arcane or religious scholarship',
-        },
-      },
+      { id: 'overview' },
+      { id: 'civil-war-fortunes', heading: 'A Title Without a Seat' },
+      { id: 'chromatic-stigma', heading: 'The Chromatic Stigma' },
     ],
     relatedLinks: [
       { label: 'House Aldaine', to: '/factions/aldaine' },
@@ -216,12 +173,8 @@ They have backed Chalexis without hesitation.`,
     allegiance: 'chalexis',
     color: '#6a8a6a',
     crestImage: '/chalesia-codex/arms/house-mordell-crest.png',
-    tagline: 'Lords of Ilthyrion — bannermen of House Aldaine in the eastern provinces.',
     sections: [
-      {
-        id: 'overview',
-        content: `House Mordell holds Ilthyrion province as vassals of House Aldaine. They are a reliable but unspectacular house — their value is consistency and loyalty rather than independent power. The current lord is an Aldaine ally of long standing and has committed to the Chalexis faction without reservation.`,
-      },
+      { id: 'overview' },
     ],
     relatedLinks: [
       { label: 'House Aldaine', to: '/factions/aldaine' },
@@ -234,12 +187,8 @@ They have backed Chalexis without hesitation.`,
     allegiance: 'neutral',
     color: '#7a6a4a',
     crestImage: '/chalesia-codex/arms/house-caldier-crest.png',
-    tagline: 'Lords of Salixvale — a minor house holding a quiet earldom in the south.',
     sections: [
-      {
-        id: 'overview',
-        content: `House Caldier governs Salixvale, one of the smaller southern provinces. They have avoided committing to any faction, a pragmatic but increasingly precarious position as the civil war demands loyalty from everyone. Their seat at Vendris is prosperous enough to matter but not prominent enough to attract unwanted attention — so far.`,
-      },
+      { id: 'overview' },
     ],
     relatedLinks: [],
   },
@@ -250,12 +199,8 @@ They have backed Chalexis without hesitation.`,
     allegiance: 'neutral',
     color: '#7a7a9a',
     crestImage: '/chalesia-codex/arms/house-sentaire-crest.png',
-    tagline: 'Lords of Vinat — a contested march family caught between advancing armies.',
     sections: [
-      {
-        id: 'overview',
-        content: `House Sentaire holds Vinat County, one of the most actively contested regions of the civil war. The province carries the "wartime" designation in imperial records alongside three settlements, meaning the lord is either a hero of the resistance or a collaborator — depending entirely on which army you ask. The Sentaires have reportedly changed their stated allegiance twice already.`,
-      },
+      { id: 'overview' },
     ],
     relatedLinks: [],
   },
@@ -266,15 +211,48 @@ They have backed Chalexis without hesitation.`,
     allegiance: 'chalexis',
     color: '#8a6a3a',
     crestImage: '/chalesia-codex/arms/karathex-crest.png',
-    tagline: 'Lords of Karathex Province — a wartime Chalexis ally in the eastern interior.',
     sections: [
-      {
-        id: 'overview',
-        content: `House Karathex governs the province that shares their name, a mid-sized eastern territory. They declared for Chalexis early in the war, apparently as a matter of conviction rather than calculation — the current lord has a reputation for blunt loyalty that has not always served him well politically. Their province has not yet seen direct military action, though this may change.`,
-      },
+      { id: 'overview' },
     ],
     relatedLinks: [
       { label: 'Princess Chalexis', to: '/factions/chalexis' },
     ],
   },
 ];
+
+/**
+ * Extract the `gates` map from frontmatter — { sectionId → GatedContent }.
+ * Tolerates a missing key (returns empty object). Does not deeply validate
+ * gate shape; YAML errors throw clearly at parse time so structural typos
+ * surface there.
+ */
+function gatesFor(entityId: string): Record<string, GatedContent> {
+  const fm = getFrontmatter(CONTENT, entityId);
+  const raw = fm.gates;
+  if (!raw || typeof raw !== 'object') return {};
+  return raw as Record<string, GatedContent>;
+}
+
+/** Merge a shell with markdown content (prose + gates) into a full FactionData. */
+function hydrate(shell: FactionShell): FactionData {
+  const gates = gatesFor(shell.id);
+  const sections: LoreSection[] = shell.sections.map(s => ({
+    id: s.id,
+    heading: s.heading,
+    gate: gates[s.id],
+    content: getSection(CONTENT, shell.id, s.id),
+  }));
+  return {
+    id: shell.id,
+    name: shell.name,
+    type: shell.type,
+    allegiance: shell.allegiance,
+    color: shell.color,
+    crestImage: shell.crestImage,
+    tagline: getSection(CONTENT, shell.id, 'tagline'),
+    sections,
+    relatedLinks: shell.relatedLinks,
+  };
+}
+
+export const FACTIONS: FactionData[] = SHELLS.map(hydrate);

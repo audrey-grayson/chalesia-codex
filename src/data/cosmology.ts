@@ -1,4 +1,5 @@
 import type { GatedContent } from '../types';
+import { indexContent, getSection } from '../lib/content';
 
 export interface PlaneData {
   id: string;
@@ -16,110 +17,113 @@ export const COSMOLOGY_GATE: GatedContent = {
   hint: 'Reserved for those trained in Arcana or Religion, or who have lived as an acolyte or hermit.',
 };
 
-export const PLANES: Record<string, PlaneData> = {
-  material: {
+/**
+ * Prose lives in `src/content/cosmology/<id>.md`. Each plane has `tagline`
+ * and `description` sections. The `_afterlife.md` file holds the standalone
+ * afterlife note as a `## note` section.
+ */
+
+const RAW = import.meta.glob('../content/cosmology/*.md', {
+  eager: true,
+  query: '?raw',
+  import: 'default',
+}) as Record<string, string>;
+
+const CONTENT = indexContent(RAW);
+
+interface PlaneShell {
+  id: string;
+  name: string;
+  shortName: string;
+  color: string;
+  glow?: string;
+}
+
+const SHELLS: PlaneShell[] = [
+  {
     id: 'material',
     name: 'The Prime Material Plane',
     shortName: 'Material',
-    tagline: 'The mundane world — earth, sea, and sky.',
-    description:
-      'The world where mortals live and die. The world of forests and cities, of harvest and war. From every other plane, the Material is what is being looked at: it is the reference, the centre, the place where stories happen. Magic touches it but does not originate here.',
     color: '#c9a84c',
   },
-  ethereal: {
+  {
     id: 'ethereal',
     name: 'The Aethereal Plane',
     shortName: 'Aetherea',
-    tagline: 'A thin shell wrapped around the Material — the home of ghosts and dreams.',
-    description:
-      'A translucent layer of silvered mist that overlaps the Material plane entirely. Ghosts walk here, watching the living world they cannot quite touch. Dreams unfold in its currents. Mediums and certain Eramane initiates can briefly perceive into the Aethereal; the dying sometimes drift through it before passing on.',
     color: '#a8c8d8',
   },
-  feywild: {
+  {
     id: 'feywild',
     name: 'Faerie',
     shortName: 'Faerie',
-    tagline: 'A reflection of the Material, brighter and stranger — the realm of fey and elves.',
-    description:
-      'A parallel of the Material where colour saturates, beauty intensifies, and meaning runs closer to the surface. Time runs strange here. Faerie sits "above" the Material in cosmological terms, closer to the Plane of Life — life-essence is abundant, growth runs riot. Raxos is queen here. Elves and fey-blooded mortals can sometimes feel its pull.',
     color: '#92e0a4',
   },
-  shadowfell: {
+  {
     id: 'shadowfell',
     name: 'The Shadowfell',
     shortName: 'Shadowfell',
-    tagline: 'A reflection of the Material, dimmer and quieter — the realm of shadow and grief.',
-    description:
-      'The mirror to Faerie below. Colours bleach to grey, sound dulls, joy thins. The Shadowfell is closer to the Plane of Death — life essence drains slowly from those who linger. Some Eramane shadow-rites brush its edges. The deeply grief-stricken sometimes report dreams of a grey landscape: that is the Shadowfell calling.',
     color: '#b09cd0',
   },
-  positive: {
+  {
     id: 'positive',
     name: 'The Plane of Life',
     shortName: 'Life',
-    tagline: 'A point of pure life-energy — the source of all growth and animation.',
-    description:
-      'Not a place but a singularity. Life-essence floods outward from the Plane of Life and into every living thing on every plane. At death, that essence returns here almost instantly; this is why resurrection magic must work quickly. Direct exposure would unmake a mortal in an instant — too much life cannot be contained.',
     color: '#ffffff',
     glow: '#fff4c0',
   },
-  negative: {
+  {
     id: 'negative',
     name: 'The Plane of Death',
     shortName: 'Death',
-    tagline: 'A point of pure stillness — the resting place of mortal consciousness.',
-    description:
-      'The mirror to the Plane of Life. Consciousness falls here at death and rests in an Asphodel-like limbo for roughly a century, slowly winnowed down to its essential deeds and words. Only that purest essence eventually filters to the Outer Planes. Necromancy taps power that leaks from the Plane of Death. Soranus claims dominion here, though even he treads carefully.',
     color: '#0a0a0a',
     glow: '#3a1a3a',
   },
-  astral: {
+  {
     id: 'astral',
     name: 'The Astral Plane',
     shortName: 'Astral',
-    tagline: 'The silver sea between the planes — the medium of thought itself.',
-    description:
-      'A starlit ocean of pure thought through which all the other planes are suspended. Travelers project into it via the silver cord — sever the cord and the body dies, the consciousness drifts forever. Eramane initiates speak of "reading the Astral" to glimpse distant minds or events. Time is meaningless here; thought is geography. The colour palette of the Astral is the colour palette of dreams.',
     color: '#d8e0ff',
   },
-  air: {
+  {
     id: 'air',
     name: 'Syrania, the Azure Sky',
     shortName: 'Syrania',
-    tagline: 'A boundless vault of clear blue air — the realm of pure sky and contemplative peace.',
-    description:
-      'An endless cloudless blue, where the air itself sings if you listen long enough. Floating spires of pale stone hang in nothing, and the beings who dwell here — sylphs, archons, and stranger things — drift among them on currents that follow no compass. The plane is associated with wisdom and patience as much as with the elemental power of air; Eramane initiates report that prolonged scrying brushes against its edges.',
     color: '#c8e0e8',
   },
-  fire: {
+  {
     id: 'fire',
     name: 'Fernia, the Sea of Fire',
     shortName: 'Fernia',
-    tagline: 'An ocean of living flame — the forge that Kaynan envies.',
-    description:
-      'Endless rolling seas of liquid flame, with islands of obsidian, brass, and slowly drifting basalt. Efreet cities glitter on the larger islands. The plane is hostile to mortal life by an absurd margin, but its forges produce metals impossible anywhere else.',
     color: '#e87850',
   },
-  water: {
+  {
     id: 'water',
     name: 'Risia, the Plain of Ice',
     shortName: 'Risia',
-    tagline: 'An infinite frozen waste — water made still, motion made cold.',
-    description:
-      'Not a sea but a frozen one — Risia is the elemental aspect of water as preserved, slowed, eternal. Glaciers stretch beyond any horizon, crevasses descend into pale blue dark, and frostfell creatures move with patience that mocks mortal time. Syltea\'s priests recognise Risia as the sister-state of the tides she rules: water held still and remembered, rather than flowing and forgotten.',
     color: '#7ab8d8',
   },
-  earth: {
+  {
     id: 'earth',
     name: 'Parvata, the Eternal Mountain',
     shortName: 'Parvata',
-    tagline: 'A single mountain without summit, foothill, or end — earth as it dreams of itself.',
-    description:
-      'Not a landscape but a substance. Parvata is the elemental aspect of earth made absolute: one continuous mountain, granite and basalt and crystal seam, extending in every direction without surface or bottom. There are tunnels and chambers within it carved by dao and stranger excavators, lit by veins of self-glowing ore, but no horizon — only more stone, more weight, more downward. Skeinland dwarves claim Strithos forged the first of their kind from a fragment of Parvata, and that the homing instinct dwarves feel toward deep places is Parvata calling its children back.',
     color: '#a08860',
   },
-};
+];
 
-export const AFTERLIFE_NOTE = `Souls do not travel intact to their respective aligned planes. At the moment of death they are split in two — the life-essence returns to the Plane of Life almost immediately, while the consciousness falls to rest on the Plane of Death. There, souls are winnowed down to the very essence of their words and deeds, their personhood bleeding away back into the Elemental Planes over roughly a century (hence the resurrection time limit). Only that purest essence eventually joins the Outer Planes, once it has passed through the filtering process.
+function hydrate(shell: PlaneShell): PlaneData {
+  return {
+    id: shell.id,
+    name: shell.name,
+    shortName: shell.shortName,
+    color: shell.color,
+    glow: shell.glow,
+    tagline: getSection(CONTENT, shell.id, 'tagline'),
+    description: getSection(CONTENT, shell.id, 'description'),
+  };
+}
 
-This is why mortals can follow "evil" gods without fear of eternal damnation: the reward of such worship is in life, not in any afterlife. Chalesia operates on a mythic, Nietzschean morality more like the ancient world than a Christian one.`;
+export const PLANES: Record<string, PlaneData> = Object.fromEntries(
+  SHELLS.map(s => [s.id, hydrate(s)]),
+);
+
+export const AFTERLIFE_NOTE: string = getSection(CONTENT, '_afterlife', 'note');

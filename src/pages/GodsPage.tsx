@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { GODS } from '../data/gods';
+import { Markdown, InlineMarkdown } from '../components/Markdown';
 import type { ContentFlag } from '../types';
 
 const ALIGNMENT_COLORS = { lawful: '#7ab5a0', neutral: '#c9a84c', chaotic: '#b52222' };
@@ -28,7 +29,9 @@ export function GodsPage({ flags: _flags }: Props) {
               <div className="flex items-start justify-between mb-2">
                 <div>
                   <h3 className="font-display text-xl text-codex-parchment">{god.name}</h3>
-                  <p className="text-codex-parchmentDim text-sm italic">{god.tagline}</p>
+                  <p className="text-codex-parchmentDim text-sm italic">
+                    <InlineMarkdown>{god.tagline}</InlineMarkdown>
+                  </p>
                 </div>
                 <span className="text-xs font-display px-2 py-0.5 rounded ml-3 flex-shrink-0"
                   style={{ color: ALIGNMENT_COLORS[god.alignment], borderColor: ALIGNMENT_COLORS[god.alignment] + '44', border: '1px solid', background: ALIGNMENT_COLORS[god.alignment] + '11' }}>
@@ -40,8 +43,12 @@ export function GodsPage({ flags: _flags }: Props) {
                   <span key={d} className="text-xs bg-codex-border/50 text-codex-parchmentDim px-2 py-0.5 rounded">{d}</span>
                 ))}
               </div>
-              <p className="text-codex-parchment text-sm leading-relaxed mb-2">{god.description}</p>
-              <p className="text-codex-parchmentDim text-xs italic">{god.worshippers}</p>
+              <div className="text-codex-parchment text-sm leading-relaxed mb-2">
+                <Markdown>{god.description}</Markdown>
+              </div>
+              <p className="text-codex-parchmentDim text-xs italic">
+                <InlineMarkdown>{god.worshippers}</InlineMarkdown>
+              </p>
             </motion.div>
           ))}
         </div>

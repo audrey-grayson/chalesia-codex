@@ -28,17 +28,17 @@ gates:
 A small southern port town in Vorakrel province — wind-bitten, war-thinned, and watched over by an old soldier with too few hands.
 
 ## overview
-Krylanth is a small coastal town of perhaps four and a half thousand souls, perched where the southern hills give way to the sea. It is not the seat of Vorakrel province (that is Firkrel, further inland) and answers to that seat only loosely — for practical purposes Krylanth runs itself, or fails to. Once an unremarkable fishing port, it has lately taken on the strained air of every settlement that the civil war has noticed but not fully consumed — the garrison is undermanned, the harbour traffic has thinned, and the magistrate looks more harried each season.
+Krylanth is a small coastal town of perhaps four and a half thousand, perched on a patch of dry land amid the coastal swamps. Of late, the civil war has hurt Krylanth indirectly — the garrison is undermanned, the harbour traffic has thinned, and the magistrate looks more harried each season.
 
 It is the kind of town where strangers are watched but not turned away. There is honest work for those willing to take it, and dishonest work for those who know where to ask.
 
 ## authorities
-**Magistrate Elazar Dalton** holds nominal authority — an LN bureaucrat, bald, perpetually mopping his brow, and visibly aware that he is in over his head. He has of late been posting rewards for solving problems he has no resources to handle himself.
+**Magistrate Elazar Dalton** holds nominal authority — a bureaucrat, bald, perpetually mopping his brow, and visibly aware that he is in over his head. He has of late been posting rewards for solving problems he has no resources to handle himself.
 
 **Ser Volus** captains the dozen-strong town guard from a small headquarters off the northern square. Forty-odd years old, gruff, eyepatched, a veteran of the Acenian campaign two decades back. She is the only real fighter in the town and knows it; she will not lead a sally into the countryside, because if she dies Krylanth is defenceless. She respects military discipline and despises sellswords who play loose.
 
 ## inns-and-temple
-Two taverns serve the town. **The Dancing Rose** — "the Rose" to locals — is the respectable one: farmers and small merchants, talkative, theory-prone, just shy of comfortable lodgings at 7sp the night. **The Sea Skald** down on the docks is the other thing: dive prices (1sp), dive clientele, and fights that begin before the singing stops.
+Two taverns serve the town. **The Dancing Rose** — "the Rose" to locals — is the respectable one: farmers and merchants come here to talk and carouse. It has comfortable lodgings. **The Sea Skald** down on the docks is its opposite: dive prices, a rough clientele, and fights that begin before the singing stops.
 
 The **Temple of the Nine** is one of the few stone buildings in town, with a shrine to each major god of the Hanacene pantheon. Its head priestess is a young cleric of Alreth, the sun god — earnest, undertrained, and grateful for visitors who know the prayers.
 

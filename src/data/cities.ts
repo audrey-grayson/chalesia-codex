@@ -96,7 +96,7 @@ const SHELLS: CityShell[] = [
       { id: 'legitimacy', heading: 'The Question of Legitimacy' },
     ],
     relatedLinks: [
-      { label: 'Lord Halkir (faction)', to: '/factions/halkir' },
+      { label: 'King Halkir (faction)', to: '/factions/halkir' },
     ],
   },
   {
@@ -188,7 +188,7 @@ const SHELLS: CityShell[] = [
     ],
     relatedLinks: [
       { label: 'Pelath', to: '/cities/pelath' },
-      { label: 'Lord Halkir (faction)', to: '/factions/halkir' },
+      { label: 'King Halkir (faction)', to: '/factions/halkir' },
       { label: 'Zorlatra', to: '/cities/zorlatra' },
     ],
   },

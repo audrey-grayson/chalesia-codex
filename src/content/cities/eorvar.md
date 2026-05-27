@@ -4,7 +4,7 @@ rulers:
 ---
 
 ## tagline
-The contested eastern city — controlled by House Solentis, formally Chalexis-aligned but coveted by Iaryx.
+The contested eastern city — controlled by House Solentis, Chalexis-aligned but coveted by Halkir.
 
 ## overview
-Eorvar guards the eastern coastal approaches and serves as the main port connecting the Hanacene mainland with the elven-influenced islands to the east. House Solentis has ruled Y'lanthitar for five generations and currently backs Princess Chalexis — though their long rivalry with House Aldaine means that loyalty is contingent on continued imperial favor.
+Before the civil war, Eorvar was a major hub of trade on the Bay of Diamonds. It sits on a river delta on the eastern side of the inland sea. Now, it has transformed into a naval power on the inland sea from the well-guarded bay the delat opens into. House Solentis has ruled Y'lanithar Province from this seat for five generations and are perennial rivals with their southern neighbors the Aldaines.

@@ -233,12 +233,11 @@ function rulersFor(entityId: string): string[] | undefined {
 /** Merge a shell with markdown content (prose + gates + rulers) into a full CityData. */
 function hydrate(shell: CityShell): CityData {
   const gates = gatesFor(shell.id);
-  const sections: LoreSection[] = shell.sections.map(s => ({
-    id: s.id,
-    heading: s.heading,
-    gate: gates[s.id],
-    content: getSection(CONTENT, shell.id, s.id),
-  }));
+  const sections: LoreSection[] = shell.sections.flatMap(s => {
+    const content = getSection(CONTENT, shell.id, s.id);
+    if (content === undefined) return [];
+    return [{ id: s.id, heading: s.heading, gate: gates[s.id], content }];
+  });
   return {
     id: shell.id,
     name: shell.name,
@@ -249,7 +248,7 @@ function hydrate(shell: CityShell): CityData {
     mapX: shell.mapX,
     mapY: shell.mapY,
     isCapital: shell.isCapital,
-    tagline: getSection(CONTENT, shell.id, 'tagline'),
+    tagline: getSection(CONTENT, shell.id, 'tagline') ?? '',
     sections,
     rulers: rulersFor(shell.id),
     relatedLinks: shell.relatedLinks,

@@ -117,8 +117,8 @@ function hydrate(shell: PlaneShell): PlaneData {
     shortName: shell.shortName,
     color: shell.color,
     glow: shell.glow,
-    tagline: getSection(CONTENT, shell.id, 'tagline'),
-    description: getSection(CONTENT, shell.id, 'description'),
+    tagline: getSection(CONTENT, shell.id, 'tagline') ?? '',
+    description: getSection(CONTENT, shell.id, 'description') ?? '',
   };
 }
 
@@ -126,4 +126,4 @@ export const PLANES: Record<string, PlaneData> = Object.fromEntries(
   SHELLS.map(s => [s.id, hydrate(s)]),
 );
 
-export const AFTERLIFE_NOTE: string = getSection(CONTENT, '_afterlife', 'note');
+export const AFTERLIFE_NOTE: string = getSection(CONTENT, '_afterlife', 'note') ?? '';

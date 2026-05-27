@@ -118,9 +118,9 @@ function hydrate(shell: GodShell): GodData {
     domains: shell.domains,
     symbol: shell.symbol,
     pantheon: shell.pantheon,
-    tagline: getSection(CONTENT, shell.id, 'tagline'),
-    description: getSection(CONTENT, shell.id, 'description'),
-    worshippers: getSection(CONTENT, shell.id, 'worshippers'),
+    tagline: getSection(CONTENT, shell.id, 'tagline') ?? '',
+    description: getSection(CONTENT, shell.id, 'description') ?? '',
+    worshippers: getSection(CONTENT, shell.id, 'worshippers') ?? '',
   };
 }
 

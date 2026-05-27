@@ -110,22 +110,25 @@ export function indexContent(glob: Record<string, string>): Map<string, ParsedCo
 }
 
 /**
- * Resolve a prose section, throwing a clear error if the markdown file or
- * section is missing. Loud failures are intentional: silently rendering
- * empty sections would let typos in section ids ship to users.
+ * Resolve a prose section. Returns `undefined` if the file or heading is
+ * missing — callers decide whether to skip rendering or substitute a fallback.
+ * A console warning is emitted for missing sections so authoring mistakes
+ * stay visible during development without crashing the page.
  */
 export function getSection(
   index: Map<string, ParsedContent>,
   entityId: string,
   sectionId: string,
-): string {
+): string | undefined {
   const entity = index.get(entityId);
   if (!entity) {
-    throw new Error(`Content missing: no markdown file for entity '${entityId}'`);
+    console.warn(`Content missing: no markdown file for entity '${entityId}'`);
+    return undefined;
   }
   const body = entity.sections.get(sectionId);
   if (body === undefined) {
-    throw new Error(`Content missing: '${entityId}.md' has no '## ${sectionId}' section`);
+    console.warn(`Content missing: '${entityId}.md' has no '## ${sectionId}' section`);
+    return undefined;
   }
   return body;
 }
